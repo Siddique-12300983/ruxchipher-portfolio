@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abu Bakar Siddique · ruxcipher</title>
+<meta name="description" content="Abu Bakar Siddique (ruxcipher) — Cyber Security student at CQUniversity, Sydney. Building Active Directory labs on the path to a purple team internship in 2027.">
+<meta name="theme-color" content="#05070f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2305070f'/%3E%3Cpath d='M16 22l12 10-12 10' stroke='%2300c8ff' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M32 44h16' stroke='%237b5cff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #05070f;
+    --bg-2: #0a0e1c;
+    --panel: rgba(13, 18, 36, 0.72);
+    --panel-solid: #0d1224;
+    --line: rgba(120, 140, 200, 0.14);
+    --line-strong: rgba(120, 140, 200, 0.28);
+    --text: #e6ebf5;
+    --muted: #8c96b0;
+    --dim: #5a6480;
+    --cyan: #00c8ff;
+    --purple: #7b5cff;
+    --green: #3ddc97;
+    --red: #ff5c7a;
+    --amber: #ffb547;
+    --grad: linear-gradient(120deg, var(--cyan), var(--purple));
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --radius: 14px;
+    --nav-h: 68px;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; scroll-padding-top: var(--nav-h); -webkit-text-size-adjust: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body.booting { overflow: hidden; }
+
+  ::selection { background: rgba(0, 200, 255, 0.28); color: #fff; }
+
+  a { color: inherit; text-decoration: none; }
+
+  :focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 6px; }
+
+  .mono { font-family: var(--mono); }
+
+  /* ---------- Background layers ---------- */
+  #net {
+    position: fixed; inset: 0; z-index: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
+
+  .grid-overlay {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0, 200, 255, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 200, 255, 0.045) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, #000 30%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, #000 30%, transparent 100%);
+    animation: gridDrift 40s linear infinite;
+  }
+
+  @keyframes gridDrift { to { background-position: 56px 56px, 56px 56px; } }
+
+  .glow {
+    position: fixed; z-index: 0; pointer-events: none;
+    width: 60vmax; height: 60vmax; border-radius: 50%;
+    filter: blur(90px); opacity: 0.16;
+  }
+  .glow.g1 { background: var(--cyan); top: -25vmax; left: -20vmax; }
+  .glow.g2 { background: var(--purple); bottom: -30vmax; right: -20vmax; opacity: 0.18; }
+
+  .scanlines {
+    position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0, 0, 0, 0.12) 2px 3px);
+    opacity: 0.35;
+  }
+
+  main, nav, footer { position: relative; z-index: 2; }
+
+  /* ---------- Boot sequence ---------- */
+  #boot {
+    position: fixed; inset: 0; z-index: 100;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    transition: opacity 0.7s var(--ease), visibility 0.7s;
+  }
+  #boot.done { opacity: 0; visibility: hidden; }
+
+  .boot-box { width: min(560px, 100%); font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  .boot-line { white-space: pre-wrap; opacity: 0; transform: translateY(4px); transition: opacity 0.25s, transform 0.25s; }
+  .boot-line.show { opacity: 1; transform: none; }
+  .boot-line .ok { color: var(--green); }
+  .boot-line .acc { color: var(--cyan); }
+  .boot-line.granted { margin-top: 14px; color: var(--text); font-weight: 700; letter-spacing: 0.2em; }
+  .boot-line.granted span { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .boot-bar { margin-top: 18px; height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .boot-bar i { display: block; height: 100%; width: 0; background: var(--grad); transition: width 0.3s var(--ease); }
+  .boot-skip { margin-top: 14px; font-size: 11px; color: var(--dim); }
+
+  /* ---------- Load-in reveal ---------- */
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.9s var(--ease), transform 0.9s var(--ease); transition-delay: var(--d, 0s); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* ---------- Nav ---------- */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    height: var(--nav-h);
+    display: flex; align-items: center;
+    transition: background 0.4s, border-color 0.4s, backdrop-filter 0.4s;
+    border-bottom: 1px solid transparent;
+    transform: translateY(-100%);
+  }
+  body.loaded nav { transform: none; transition: transform 0.8s var(--ease) 0.15s, background 0.4s, border-color 0.4s; }
+  nav.scrolled {
+    background: rgba(5, 7, 15, 0.78);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border-bottom-color: var(--line);
+  }
+
+  .nav-inner { width: min(1180px, 100% - 32px); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+
+  .logo { font-family: var(--mono); font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 2px; }
+  .logo .tilde { color: var(--purple); }
+  .logo .name { color: var(--text); }
+  .logo .caret { display: inline-block; width: 8px; height: 17px; background: var(--cyan); margin-left: 4px; animation: blink 1.05s steps(1) infinite; }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .nav-links { display: flex; gap: 4px; list-style: none; }
+  .nav-links a {
+    font-family: var(--mono); font-size: 13px; color: var(--muted);
+    padding: 8px 14px; border-radius: 8px; position: relative;
+    transition: color 0.25s, background 0.25s;
+  }
+  .nav-links a .num { color: var(--cyan); opacity: 0.7; margin-right: 4px; }
+  .nav-links a:hover { color: var(--text); background: rgba(255, 255, 255, 0.04); }
+  .nav-links a.active { color: var(--text); }
+  .nav-links a::after {
+    content: ""; position: absolute; left: 14px; right: 14px; bottom: 3px; height: 1px;
+    background: var(--grad); transform: scaleX(0); transform-origin: left; transition: transform 0.35s var(--ease);
+  }
+  .nav-links a.active::after { transform: scaleX(1); }
+
+  .menu-btn {
+    display: none; background: none; border: 1px solid var(--line-strong); border-radius: 10px;
+    width: 42px; height: 42px; cursor: pointer; position: relative;
+  }
+  .menu-btn span { position: absolute; left: 11px; right: 11px; height: 2px; background: var(--text); border-radius: 2px; transition: transform 0.3s var(--ease), opacity 0.2s; }
+  .menu-btn span:nth-child(1) { top: 14px; }
+  .menu-btn span:nth-child(2) { top: 20px; }
+  .menu-btn span:nth-child(3) { top: 26px; }
+  .menu-btn[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  .menu-btn[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .menu-btn[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+  /* ---------- Layout ---------- */
+  section { padding: 120px 0; }
+  .wrap { width: min(1180px, 100% - 32px); margin: 0 auto; }
+
+  .sec-head { margin-bottom: 56px; }
+  .sec-tag { font-family: var(--mono); font-size: 13px; color: var(--cyan); display: inline-flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .sec-tag::before { content: ""; width: 28px; height: 1px; background: var(--cyan); }
+  .sec-title { font-size: clamp(30px, 4.4vw, 46px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+  .sec-title .hl { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sec-sub { color: var(--muted); max-width: 620px; margin-top: 14px; font-size: 17px; }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    position: relative;
+  }
+
+  /* Gradient border on hover */
+  .glow-card { transition: transform 0.4s var(--ease), border-color 0.4s, box-shadow 0.4s; }
+  .glow-card::before {
+    content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px;
+    background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), rgba(0, 200, 255, 0.55), rgba(123, 92, 255, 0.35) 40%, transparent 70%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    opacity: 0; transition: opacity 0.4s; pointer-events: none;
+  }
+  .glow-card:hover::before { opacity: 1; }
+  .glow-card:hover { transform: translateY(-3px); box-shadow: 0 20px 50px -20px rgba(0, 200, 255, 0.25); }
+
+  /* ---------- Hero ---------- */
+  #hero { position: relative; min-height: 100vh; min-height: 100svh; display: flex; align-items: center; padding: calc(var(--nav-h) + 40px) 0 80px; }
+  .hero-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 56px; align-items: center; }
+
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+    padding: 7px 14px 7px 12px; border: 1px solid var(--line-strong); border-radius: 999px;
+    background: rgba(10, 14, 28, 0.6); margin-bottom: 28px;
+  }
+  .status-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.6); animation: pulse 2s infinite; }
+  @keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(61, 220, 151, 0); } 100% { box-shadow: 0 0 0 0 rgba(61, 220, 151, 0); } }
+
+  .hero-hello { font-family: var(--mono); color: var(--cyan); font-size: 15px; margin-bottom: 12px; }
+  .hero-name {
+    font-size: clamp(44px, 7.4vw, 88px); font-weight: 800; line-height: 0.98; letter-spacing: -0.045em;
+  }
+  .hero-name .last { display: block; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .codename { margin-top: 22px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 14px; color: var(--muted); }
+  .codename b {
+    color: var(--text); font-weight: 500; padding: 4px 10px; border-radius: 6px;
+    border: 1px solid rgba(123, 92, 255, 0.45); background: rgba(123, 92, 255, 0.1);
+    position: relative;
+  }
+  .codename b.glitch:hover { animation: glitch 0.4s steps(2) 2; }
+  @keyframes glitch {
+    0% { text-shadow: 2px 0 var(--cyan), -2px 0 var(--purple); transform: translateX(0); }
+    25% { text-shadow: -2px 0 var(--cyan), 2px 0 var(--purple); transform: translateX(1px); }
+    50% { text-shadow: 2px 1px var(--cyan), -2px -1px var(--purple); transform: translateX(-1px); }
+    100% { text-shadow: none; transform: none; }
+  }
+
+  .typing { margin-top: 26px; font-family: var(--mono); font-size: clamp(16px, 2.1vw, 21px); color: var(--text); min-height: 1.6em; }
+  .typing .prompt { color: var(--purple); }
+  .typing .role { color: var(--cyan); }
+  .cursor { display: inline-block; width: 0.58em; height: 1.15em; background: var(--cyan); vertical-align: -0.2em; margin-left: 3px; animation: blink 1.05s steps(1) infinite; }
+
+  .hero-lede { margin-top: 22px; color: var(--muted); font-size: 17px; max-width: 540px; }
+  .hero-lede strong { color: var(--text); font-weight: 600; }
+
+  .cta { margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn {
+    font-family: var(--mono); font-size: 14px; font-weight: 500;
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 22px; border-radius: 10px; cursor: pointer;
+    transition: transform 0.3s var(--ease), box-shadow 0.3s, background 0.3s, border-color 0.3s;
+  }
+  .btn svg { width: 16px; height: 16px; transition: transform 0.3s var(--ease); }
+  .btn:hover svg { transform: translateX(3px); }
+  .btn-primary { background: var(--grad); color: #05070f; font-weight: 700; box-shadow: 0 10px 30px -10px rgba(0, 200, 255, 0.5); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 40px -10px rgba(123, 92, 255, 0.6); }
+  .btn-ghost { border: 1px solid var(--line-strong); color: var(--text); background: rgba(10, 14, 28, 0.5); }
+  .btn-ghost:hover { border-color: var(--cyan); transform: translateY(-2px); }
+
+  /* Terminal window */
+  .term { overflow: hidden; box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 200, 255, 0.06); }
+  .term-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: rgba(5, 7, 15, 0.5); }
+  .term-bar i { width: 11px; height: 11px; border-radius: 50%; background: #2a3150; }
+  .term-bar i:nth-child(1) { background: #ff5f57; }
+  .term-bar i:nth-child(2) { background: #febc2e; }
+  .term-bar i:nth-child(3) { background: #28c840; }
+  .term-bar span { margin-left: 10px; font-family: var(--mono); font-size: 12px; color: var(--dim); }
+  .term-body { padding: 20px 20px 22px; font-family: var(--mono); font-size: 13px; line-height: 1.85; color: var(--muted); overflow-x: auto; }
+  .term-body .p { color: var(--purple); }
+  .term-body .c { color: var(--cyan); }
+  .term-body .g { color: var(--green); }
+  .term-body .w { color: var(--text); }
+  .term-body .y { color: var(--amber); }
+  .term-body .r { color: var(--red); }
+  .term-body .cm { color: var(--dim); }
+  .term-body .ln { display: block; white-space: pre; }
+  #heroTerm .ln { opacity: 0; transform: translateX(-6px); transition: opacity 0.35s, transform 0.35s; }
+  #heroTerm .ln.show { opacity: 1; transform: none; }
+
+  .scroll-hint {
+    position: absolute; left: 0; right: 0; bottom: 28px; margin: 0 auto; width: max-content;
+    font-family: var(--mono); font-size: 11px; color: var(--dim); letter-spacing: 0.2em;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+  }
+  .scroll-hint .mouse { width: 20px; height: 32px; border: 1.5px solid var(--dim); border-radius: 12px; position: relative; }
+  .scroll-hint .mouse::after { content: ""; position: absolute; left: 50%; top: 6px; width: 2px; height: 6px; margin-left: -1px; background: var(--cyan); border-radius: 2px; animation: wheel 1.8s var(--ease) infinite; }
+  @keyframes wheel { 0% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(10px); } }
+
+  /* ---------- About ---------- */
+  .about-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 28px; }
+  .about-text { padding: 36px; }
+  .about-text p { color: var(--muted); font-size: 17px; }
+  .about-text p + p { margin-top: 18px; }
+  .about-text strong { color: var(--text); font-weight: 600; }
+  .about-text .quote {
+    margin-top: 28px; padding: 18px 20px; border-left: 2px solid var(--purple);
+    background: rgba(123, 92, 255, 0.07); border-radius: 0 10px 10px 0;
+    font-family: var(--mono); font-size: 14px; color: var(--text);
+  }
+  .about-text .quote span { color: var(--purple); }
+
+  .facts { display: grid; gap: 14px; }
+  .fact { padding: 20px 22px; display: flex; gap: 16px; align-items: flex-start; }
+  .fact .ico {
+    flex: none; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center;
+    background: rgba(0, 200, 255, 0.08); border: 1px solid rgba(0, 200, 255, 0.22); color: var(--cyan);
+  }
+  .fact:nth-child(even) .ico { background: rgba(123, 92, 255, 0.1); border-color: rgba(123, 92, 255, 0.3); color: var(--purple); }
+  .fact .ico svg { width: 20px; height: 20px; }
+  .fact .k { font-family: var(--mono); font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.12em; }
+  .fact .v { font-weight: 600; margin-top: 2px; }
+  .fact .s { font-size: 14px; color: var(--muted); }
+
+  /* ---------- Lab ---------- */
+  .lab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+  .lab-card { padding: 30px; }
+  .lab-card h3 { font-size: 20px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 10px; }
+  .lab-card h3 .badge { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--green); border: 1px solid rgba(61, 220, 151, 0.35); background: rgba(61, 220, 151, 0.08); padding: 2px 8px; border-radius: 999px; }
+  .lab-card > p { color: var(--muted); margin-top: 10px; }
+
+  .topo { margin-top: 24px; width: 100%; height: auto; display: block; }
+  .topo text { font-family: var(--mono); }
+  .topo .flow { stroke-dasharray: 4 6; animation: flow 1.4s linear infinite; }
+  .topo .attack { stroke-dasharray: 6 6; animation: flow 0.9s linear infinite; }
+  @keyframes flow { to { stroke-dashoffset: -20; } }
+  .topo .node rect { transition: stroke 0.3s; }
+  .topo .node:hover rect { stroke: var(--cyan); }
+
+  .spec { margin-top: 24px; display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .spec div { display: grid; grid-template-columns: 130px 1fr; gap: 14px; padding: 12px 16px; background: var(--panel-solid); font-size: 14px; }
+  .spec dt { font-family: var(--mono); font-size: 12px; color: var(--dim); padding-top: 1px; }
+  .spec dd { color: var(--text); }
+
+  .lab-right { display: grid; gap: 28px; }
+
+  .hunt-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .eid { font-family: var(--mono); font-size: 12px; color: var(--amber); border: 1px solid rgba(255, 181, 71, 0.35); background: rgba(255, 181, 71, 0.08); padding: 3px 10px; border-radius: 999px; }
+
+  .chain { margin-top: 22px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .chain div { padding: 14px; border-radius: 10px; border: 1px solid var(--line); background: rgba(5, 7, 15, 0.45); }
+  .chain .t { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .chain .red .t { color: var(--red); }
+  .chain .blue .t { color: var(--cyan); }
+  .chain .purple .t { color: var(--purple); }
+  .chain p { font-size: 13px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+
+  .roadmap { margin-top: 20px; list-style: none; display: grid; gap: 12px; }
+  .roadmap li { display: flex; align-items: center; gap: 14px; font-size: 15px; }
+  .roadmap .st { flex: none; font-family: var(--mono); font-size: 11px; width: 74px; text-align: center; padding: 3px 0; border-radius: 6px; }
+  .roadmap .done { color: var(--green); background: rgba(61, 220, 151, 0.08); border: 1px solid rgba(61, 220, 151, 0.3); }
+  .roadmap .next { color: var(--cyan); background: rgba(0, 200, 255, 0.08); border: 1px solid rgba(0, 200, 255, 0.3); }
+  .roadmap .next-dot { animation: blink 1.4s steps(1) infinite; }
+  .roadmap .muted { color: var(--muted); }
+
+  .repo {
+    margin-top: 22px; display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 12px;
+    border: 1px solid var(--line-strong); background: rgba(5, 7, 15, 0.5);
+    transition: border-color 0.3s, transform 0.3s var(--ease);
+  }
+  .repo:hover { border-color: var(--cyan); transform: translateY(-2px); }
+  .repo svg { width: 26px; height: 26px; flex: none; }
+  .repo .rn { font-family: var(--mono); font-size: 14px; color: var(--text); word-break: break-all; }
+  .repo .rn span { color: var(--muted); }
+  .repo .rd { font-size: 13px; color: var(--muted); }
+  .repo .arr { margin-left: auto; color: var(--cyan); flex: none; }
+
+  /* ---------- Skills ---------- */
+  .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .skill-col { padding: 30px; overflow: hidden; }
+  .skill-col::after {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .skill-col.off::after { background: linear-gradient(90deg, var(--red), transparent); }
+  .skill-col.def::after { background: linear-gradient(90deg, var(--cyan), transparent); }
+  .skill-col.dev::after { background: linear-gradient(90deg, var(--purple), transparent); }
+  .skill-col .label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; }
+  .skill-col.off .label { color: var(--red); }
+  .skill-col.def .label { color: var(--cyan); }
+  .skill-col.dev .label { color: var(--purple); }
+  .skill-col h3 { font-size: 22px; margin-top: 6px; letter-spacing: -0.01em; }
+  .skill-col > p { color: var(--muted); font-size: 14px; margin-top: 8px; }
+
+  .tags { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 10px; list-style: none; }
+  .tag {
+    font-family: var(--mono); font-size: 13px; padding: 8px 13px; border-radius: 8px;
+    border: 1px solid var(--line-strong); background: rgba(5, 7, 15, 0.55); color: var(--text);
+    display: inline-flex; align-items: center; gap: 8px;
+    opacity: 0; transform: translateY(10px) scale(0.96);
+    transition: opacity 0.5s var(--ease), transform 0.5s var(--ease), border-color 0.25s, background 0.25s;
+    transition-delay: var(--td, 0s);
+  }
+  .in .tag { opacity: 1; transform: none; }
+  .tag::before { content: ""; width: 6px; height: 6px; border-radius: 2px; flex: none; }
+  .off .tag::before { background: var(--red); }
+  .def .tag::before { background: var(--cyan); }
+  .dev .tag::before { background: var(--purple); }
+  .off .tag:hover { border-color: var(--red); background: rgba(255, 92, 122, 0.08); }
+  .def .tag:hover { border-color: var(--cyan); background: rgba(0, 200, 255, 0.08); }
+  .dev .tag:hover { border-color: var(--purple); background: rgba(123, 92, 255, 0.1); }
+
+  .purple-note {
+    margin-top: 24px; padding: 22px 26px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+    font-family: var(--mono); font-size: 14px; color: var(--muted);
+  }
+  .purple-note .eq { color: var(--text); }
+  .purple-note .eq .r { color: var(--red); }
+  .purple-note .eq .b { color: var(--cyan); }
+  .purple-note .eq .p { color: var(--purple); font-weight: 700; }
+
+  /* ---------- Education ---------- */
+  .edu { padding: 36px; display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: start; }
+  .edu-logo {
+    width: 72px; height: 72px; border-radius: 16px; display: grid; place-items: center;
+    background: linear-gradient(135deg, rgba(0, 200, 255, 0.15), rgba(123, 92, 255, 0.18));
+    border: 1px solid rgba(123, 92, 255, 0.35); color: var(--text);
+  }
+  .edu-logo svg { width: 34px; height: 34px; }
+  .edu h3 { font-size: 24px; letter-spacing: -0.02em; }
+  .edu .inst { color: var(--cyan); font-family: var(--mono); font-size: 14px; margin-top: 4px; }
+  .edu-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .edu-meta span { font-family: var(--mono); font-size: 12px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--muted); }
+  .edu-meta span b { color: var(--text); font-weight: 500; }
+
+  .timeline { margin-top: 30px; position: relative; padding-left: 26px; }
+  .timeline::before { content: ""; position: absolute; left: 6px; top: 6px; bottom: 6px; width: 1px; background: linear-gradient(var(--cyan), var(--purple), transparent); }
+  .tl { position: relative; padding-bottom: 22px; }
+  .tl:last-child { padding-bottom: 0; }
+  .tl::before { content: ""; position: absolute; left: -25px; top: 7px; width: 11px; height: 11px; border-radius: 50%; background: var(--bg); border: 2px solid var(--cyan); }
+  .tl.now::before { border-color: var(--purple); background: var(--purple); box-shadow: 0 0 0 4px rgba(123, 92, 255, 0.2); }
+  .tl.goal::before { border-style: dashed; border-color: var(--dim); }
+  .tl .when { font-family: var(--mono); font-size: 12px; color: var(--dim); }
+  .tl .what { font-weight: 600; }
+  .tl .det { font-size: 14px; color: var(--muted); }
+
+  /* ---------- Contact ---------- */
+  .contact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .contact-card { padding: 30px; display: flex; flex-direction: column; gap: 18px; min-height: 220px; }
+  .contact-card .ico { width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; border: 1px solid var(--line-strong); background: rgba(5, 7, 15, 0.6); color: var(--text); transition: color 0.3s, border-color 0.3s; }
+  .contact-card:hover .ico { color: var(--cyan); border-color: var(--cyan); }
+  .contact-card .ico svg { width: 22px; height: 22px; }
+  .contact-card h3 { font-size: 20px; }
+  .contact-card .handle { font-family: var(--mono); font-size: 13px; color: var(--muted); word-break: break-all; }
+  .contact-card .go { margin-top: auto; font-family: var(--mono); font-size: 13px; color: var(--cyan); display: inline-flex; align-items: center; gap: 8px; }
+  .contact-card .go svg { width: 14px; height: 14px; transition: transform 0.3s var(--ease); }
+  .contact-card:hover .go svg { transform: translate(3px, -3px); }
+  .contact-card.pending .go { color: var(--dim); }
+
+  .contact-term { margin-top: 28px; }
+
+  /* ---------- Footer ---------- */
+  footer { border-top: 1px solid var(--line); padding: 34px 0; }
+  .foot { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; color: var(--dim); }
+  .foot a:hover { color: var(--cyan); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 980px) {
+    .hero-grid, .about-grid, .lab-grid { grid-template-columns: 1fr; }
+    .skills-grid, .contact-grid { grid-template-columns: 1fr 1fr; }
+    .skill-col.dev { grid-column: 1 / -1; }
+    .contact-card:last-child { grid-column: 1 / -1; }
+    .hero-term-wrap { max-width: 560px; }
+  }
+
+  @media (max-width: 760px) {
+    :root { --nav-h: 62px; }
+    section { padding: 84px 0; }
+    .sec-head { margin-bottom: 40px; }
+    .menu-btn { display: block; }
+    .nav-links {
+      position: fixed; top: var(--nav-h); left: 0; right: 0;
+      flex-direction: column; gap: 0; padding: 12px 16px 20px;
+      background: rgba(5, 7, 15, 0.96); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+      transform: translateY(-8px); opacity: 0; visibility: hidden;
+      transition: transform 0.35s var(--ease), opacity 0.35s, visibility 0.35s;
+    }
+    .nav-links.open { transform: none; opacity: 1; visibility: visible; }
+    .nav-links a { display: block; padding: 14px 8px; font-size: 15px; border-bottom: 1px solid var(--line); border-radius: 0; }
+    .nav-links li:last-child a { border-bottom: 0; }
+    .nav-links a::after { display: none; }
+    nav.menu-open { background: rgba(5, 7, 15, 0.96); border-bottom-color: var(--line); }
+
+    .skills-grid, .contact-grid { grid-template-columns: 1fr; }
+    .about-text, .lab-card, .skill-col, .edu, .contact-card { padding: 24px; }
+    .chain { grid-template-columns: 1fr; }
+    .spec div { grid-template-columns: 1fr; gap: 2px; }
+    .edu { grid-template-columns: 1fr; }
+    .scroll-hint { display: none; }
+    .term-body { font-size: 12px; padding: 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
+    .cursor, .logo .caret { animation: none !important; }
+  }
+</style>
+</head>
+<body class="booting">
+
+<!-- Boot sequence -->
+<div id="boot" aria-hidden="true">
+  <div class="boot-box">
+    <div id="bootLines"></div>
+    <div class="boot-bar"><i id="bootBar"></i></div>
+    <div class="boot-skip">press any key to skip</div>
+  </div>
+</div>
+
+<!-- Background -->
+<div class="glow g1"></div>
+<div class="glow g2"></div>
+<div class="grid-overlay"></div>
+<canvas id="net"></canvas>
+<div class="scanlines"></div>
+
+<!-- Nav -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#hero" class="logo" aria-label="ruxcipher home"><span class="tilde">~/</span><span class="name">ruxcipher</span><span class="caret"></span></a>
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks"><span></span><span></span><span></span></button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about"><span class="num">01.</span>about</a></li>
+      <li><a href="#lab"><span class="num">02.</span>lab</a></li>
+      <li><a href="#skills"><span class="num">03.</span>skills</a></li>
+      <li><a href="#education"><span class="num">04.</span>education</a></li>
+      <li><a href="#contact"><span class="num">05.</span>contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section id="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="status-pill reveal" style="--d:.05s"><span class="dot"></span>Seeking purple team internship · 2027</div>
+        <p class="hero-hello reveal" style="--d:.12s">&gt; hello, world. I'm</p>
+        <h1 class="hero-name reveal" style="--d:.2s">Abu Bakar <span class="last">Siddique</span></h1>
+        <div class="codename reveal" style="--d:.3s">
+          <span>codename</span><b class="glitch">ruxcipher</b><span>// Sydney, AU</span>
+        </div>
+        <div class="typing reveal" style="--d:.4s" aria-live="polite">
+          <span class="prompt">$</span> <span class="role" id="role"></span><span class="cursor"></span>
+        </div>
+        <p class="hero-lede reveal" style="--d:.5s">
+          Second-year <strong>Cyber Security</strong> student at CQUniversity who learns by building.
+          I break things in my own lab, then learn how to catch them, and that's why I'm working toward <strong>purple teaming</strong>.
+        </p>
+        <div class="cta reveal" style="--d:.6s">
+          <a href="#lab" class="btn btn-primary">explore the lab
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="#contact" class="btn btn-ghost">get in touch</a>
+        </div>
+      </div>
+
+      <div class="hero-term-wrap reveal" style="--d:.45s">
+        <div class="panel term">
+          <div class="term-bar"><i></i><i></i><i></i><span>siddique@ruxcipher: ~</span></div>
+          <div class="term-body" id="heroTerm">
+            <span class="ln"><span class="p">❯</span> <span class="w">whoami</span></span>
+            <span class="ln"><span class="c">siddique</span> <span class="cm">aka ruxcipher</span></span>
+            <span class="ln"> </span>
+            <span class="ln"><span class="p">❯</span> <span class="w">cat</span> profile.yml</span>
+            <span class="ln"><span class="y">study</span>:  B.IT · Cyber Security</span>
+            <span class="ln"><span class="y">minor</span>:  Application Development</span>
+            <span class="ln"><span class="y">year</span>:   2nd · CQUniversity</span>
+            <span class="ln"><span class="y">base</span>:   Sydney, Australia</span>
+            <span class="ln"><span class="y">target</span>: <span class="c">purple_team_internship</span>(2027)</span>
+            <span class="ln"> </span>
+            <span class="ln"><span class="p">❯</span> <span class="w">systemctl</span> status homelab</span>
+            <span class="ln"><span class="g">●</span> homelab.service <span class="cm">- AD lab</span></span>
+            <span class="ln">  Active: <span class="g">active (running)</span></span>
+            <span class="ln">  Next:   <span class="c">sysmon + wazuh</span><span class="cursor" style="height:1em"></span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <a href="#about" class="scroll-hint reveal" style="--d:.9s" aria-label="Scroll to about"><span class="mouse"></span>SCROLL</a>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section id="about">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="sec-tag">01 · about</div>
+        <h2 class="sec-title">Build the lab first.<br><span class="hl">Learn the theory second.</span></h2>
+      </div>
+      <div class="about-grid">
+        <div class="panel about-text glow-card reveal">
+          <p>I'm <strong>Abu Bakar Siddique</strong> (most people call me <strong>Siddique</strong>), a second-year <strong>Bachelor of IT</strong> student at <strong>CQUniversity</strong>, majoring in <strong>Cyber Security</strong> with a minor in <strong>Application Development</strong>. I'm based in Sydney.</p>
+          <p>I learn by doing. Before I read the chapter on Kerberos, I'd rather have a domain controller running, an attacker box ready, and a log to dig through. Running the attack, watching it land in the logs, and then writing the detection is the loop that makes things click for me.</p>
+          <p>My goal is a <strong>purple team internship in 2027</strong>, where offensive and defensive security work together. Outside of study I work at <strong>Avis Budget Group</strong> as a Rental Operations Agent, which keeps me sharp on communication, time pressure, and solving problems for real people.</p>
+          <div class="quote"><span>//</span> attack it → log it → detect it → harden it → repeat</div>
+        </div>
+        <div class="facts">
+          <div class="panel fact glow-card reveal" style="--d:.05s">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg></div>
+            <div><div class="k">Studying</div><div class="v">B.IT · Cyber Security</div><div class="s">CQUniversity · 2nd year · App Dev minor</div></div>
+          </div>
+          <div class="panel fact glow-card reveal" style="--d:.1s">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></div>
+            <div><div class="k">Target</div><div class="v">Purple Team Internship</div><div class="s">2027 · offence and defence together</div></div>
+          </div>
+          <div class="panel fact glow-card reveal" style="--d:.15s">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>
+            <div><div class="k">Working</div><div class="v">Avis Budget Group</div><div class="s">Rental Operations Agent</div></div>
+          </div>
+          <div class="panel fact glow-card reveal" style="--d:.2s">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+            <div><div class="k">Based in</div><div class="v">Sydney, Australia</div><div class="s">AEST / AEDT</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LAB ============ -->
+  <section id="lab">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="sec-tag">02 · home lab</div>
+        <h2 class="sec-title">Harbourline Freight<span class="hl">.</span><br><span class="hl">A fake company I attack and defend.</span></h2>
+        <p class="sec-sub">A full Active Directory environment virtualised on my own machine, built to practise real attacks and the detections that catch them.</p>
+      </div>
+
+      <div class="lab-grid">
+        <div class="panel lab-card glow-card reveal">
+          <h3>Network topology <span class="badge">● online</span></h3>
+          <p>Every VM runs under KVM on an Arch Linux host. The attacker box sits on an isolated network with no route to anything real.</p>
+
+          <svg class="topo" viewBox="0 0 520 380" role="img" aria-label="Lab topology: an Arch Linux KVM host runs an isolated lab network with a Windows Server 2025 domain controller, a Windows 11 client and a Kali Linux attacker.">
+            <defs>
+              <linearGradient id="gH" x1="0" x2="1"><stop offset="0" stop-color="#00c8ff"/><stop offset="1" stop-color="#7b5cff"/></linearGradient>
+            </defs>
+            <!-- host boundary -->
+            <rect x="8" y="8" width="504" height="364" rx="16" fill="none" stroke="rgba(120,140,200,.25)" stroke-dasharray="5 5"/>
+            <text x="26" y="34" fill="#5a6480" font-size="11">HOST · Arch Linux + KVM/QEMU</text>
+
+            <!-- isolated net box -->
+            <rect x="24" y="48" width="472" height="308" rx="12" fill="rgba(123,92,255,.04)" stroke="rgba(123,92,255,.3)"/>
+            <text x="40" y="70" fill="#7b5cff" font-size="11">ISOLATED LAB NETWORK · no internet</text>
+
+            <!-- switch -->
+            <g class="node">
+              <rect x="200" y="164" width="120" height="40" rx="8" fill="#0a0e1c" stroke="url(#gH)"/>
+              <text x="260" y="189" text-anchor="middle" fill="#e6ebf5" font-size="12">virtual switch</text>
+            </g>
+
+            <!-- links -->
+            <path class="flow" d="M260 164 V128" stroke="#00c8ff" stroke-width="1.5" fill="none"/>
+            <path class="flow" d="M200 184 H140 V258" stroke="#00c8ff" stroke-width="1.5" fill="none"/>
+            <path class="attack" d="M320 184 H380 V258" stroke="#ff5c7a" stroke-width="1.5" fill="none"/>
+
+            <!-- DC -->
+            <g class="node">
+              <rect x="170" y="84" width="180" height="44" rx="8" fill="#0d1224" stroke="rgba(0,200,255,.5)"/>
+              <circle cx="190" cy="106" r="4" fill="#3ddc97"/>
+              <text x="204" y="102" fill="#e6ebf5" font-size="12" font-weight="700">Domain Controller</text>
+              <text x="204" y="118" fill="#8c96b0" font-size="10">Windows Server 2025</text>
+            </g>
+
+            <!-- Client -->
+            <g class="node">
+              <rect x="48" y="258" width="184" height="62" rx="8" fill="#0d1224" stroke="rgba(0,200,255,.5)"/>
+              <circle cx="68" cy="280" r="4" fill="#3ddc97"/>
+              <text x="82" y="284" fill="#e6ebf5" font-size="12" font-weight="700">Workstation</text>
+              <text x="82" y="300" fill="#8c96b0" font-size="10">Windows 11 · domain-joined</text>
+            </g>
+
+            <!-- Kali -->
+            <g class="node">
+              <rect x="288" y="258" width="184" height="62" rx="8" fill="#0d1224" stroke="rgba(255,92,122,.55)"/>
+              <circle cx="308" cy="280" r="4" fill="#ff5c7a"/>
+              <text x="322" y="284" fill="#e6ebf5" font-size="12" font-weight="700">Attacker</text>
+              <text x="322" y="300" fill="#8c96b0" font-size="10">Kali Linux</text>
+            </g>
+
+            <text x="392" y="232" fill="#ff5c7a" font-size="10">TGS-REQ</text>
+            <text x="64" y="232" fill="#00c8ff" font-size="10">auth / GPO</text>
+          </svg>
+
+          <dl class="spec">
+            <div><dt>host</dt><dd>Arch Linux · KVM / QEMU</dd></div>
+            <div><dt>dc</dt><dd>Windows Server 2025 (AD DS)</dd></div>
+            <div><dt>client</dt><dd>Windows 11, domain-joined</dd></div>
+            <div><dt>attacker</dt><dd>Kali Linux on the isolated network</dd></div>
+            <div><dt>org</dt><dd>Harbourline Freight · 12 users · OUs · GPOs</dd></div>
+          </dl>
+        </div>
+
+        <div class="lab-right">
+          <div class="panel lab-card glow-card reveal" style="--d:.08s">
+            <div class="hunt-head">
+              <h3>Kerberoasting: attack &amp; detect</h3>
+              <span class="eid">Event ID 4769</span>
+            </div>
+            <p>A service account with an SPN is set up on purpose. I request its ticket from Kali, then hunt for that request in the domain controller's Security log.</p>
+
+            <div class="chain">
+              <div class="red"><div class="t">Red</div><p>Register an SPN, request a TGS for the service account from Kali.</p></div>
+              <div class="blue"><div class="t">Blue</div><p>Catch the request as Event 4769 on the DC.</p></div>
+              <div class="purple"><div class="t">Purple</div><p>Tune the detection, then harden the account.</p></div>
+            </div>
+
+            <div class="panel term" style="margin-top:22px">
+              <div class="term-bar"><i></i><i></i><i></i><span>DC · PowerShell</span></div>
+              <div class="term-body">
+<span class="ln"><span class="cm"># hunt: service ticket requests using RC4</span></span>
+<span class="ln"><span class="p">PS&gt;</span> <span class="w">Get-WinEvent</span> -FilterHashtable @{</span>
+<span class="ln">      LogName=<span class="g">'Security'</span>; Id=<span class="y">4769</span> } |</span>
+<span class="ln">    <span class="w">Where-Object</span> { $_.Message <span class="c">-match</span> <span class="g">'0x17'</span> }</span>
+<span class="ln"> </span>
+<span class="ln"><span class="cm"># 0x17 = RC4-HMAC, a classic Kerberoasting tell</span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel lab-card glow-card reveal" style="--d:.14s">
+            <h3>Roadmap</h3>
+            <ul class="roadmap">
+              <li><span class="st done">done</span>KVM host on Arch Linux, isolated lab network</li>
+              <li><span class="st done">done</span>Windows Server 2025 DC + Windows 11 client</li>
+              <li><span class="st done">done</span>Harbourline Freight: 12 users, OUs, GPOs</li>
+              <li><span class="st done">done</span>SPN for Kerberoasting + 4769 detection</li>
+              <li><span class="st next"><span class="next-dot">▸</span> next</span><span>Sysmon for deeper endpoint telemetry</span></li>
+              <li><span class="st next"><span class="next-dot">▸</span> next</span><span>Wazuh SIEM for central alerting</span></li>
+            </ul>
+
+            <a class="repo" href="https://github.com/Siddique-12300983/purple-team-journey" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.4-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg>
+              <div>
+                <div class="rn"><span>Siddique-12300983 /</span> purple-team-journey</div>
+                <div class="rd">Lab notes, build steps and detections</div>
+              </div>
+              <span class="arr">↗</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SKILLS ============ -->
+  <section id="skills">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="sec-tag">03 · skills</div>
+        <h2 class="sec-title">Both sides <span class="hl">of the wire.</span></h2>
+        <p class="sec-sub">Tools and concepts I've used hands-on in my lab and coursework.</p>
+      </div>
+
+      <div class="skills-grid">
+        <div class="panel skill-col off glow-card reveal">
+          <div class="label">// offensive</div>
+          <h3>Red</h3>
+          <p>Thinking like the attacker so the defence has something real to catch.</p>
+          <ul class="tags">
+            <li class="tag">Kali Linux</li>
+            <li class="tag">Kerberoasting</li>
+            <li class="tag">SPN enumeration</li>
+            <li class="tag">Networking</li>
+          </ul>
+        </div>
+        <div class="panel skill-col def glow-card reveal" style="--d:.08s">
+          <div class="label">// defensive</div>
+          <h3>Blue</h3>
+          <p>Building, hardening and watching the environment.</p>
+          <ul class="tags">
+            <li class="tag">Active Directory</li>
+            <li class="tag">GPO</li>
+            <li class="tag">Kerberoasting detection</li>
+            <li class="tag">Event ID 4769</li>
+            <li class="tag">Wireshark</li>
+          </ul>
+        </div>
+        <div class="panel skill-col dev glow-card reveal" style="--d:.16s">
+          <div class="label">// dev &amp; infra</div>
+          <h3>Build</h3>
+          <p>The code and platforms everything else runs on.</p>
+          <ul class="tags">
+            <li class="tag">Python</li>
+            <li class="tag">Java</li>
+            <li class="tag">JDBC</li>
+            <li class="tag">Git</li>
+            <li class="tag">Arch Linux</li>
+            <li class="tag">KVM</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel purple-note reveal">
+        <span class="eq"><span class="r">red</span> + <span class="b">blue</span> = <span class="p">purple</span></span>
+        <span>Every attack I run in the lab ends with a detection I can show for it.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EDUCATION ============ -->
+  <section id="education">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="sec-tag">04 · education</div>
+        <h2 class="sec-title">Where the <span class="hl">theory</span> comes in.</h2>
+      </div>
+
+      <div class="panel edu glow-card reveal">
+        <div class="edu-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/><path d="M22 10v6"/></svg>
+        </div>
+        <div>
+          <h3>Bachelor of Information Technology</h3>
+          <div class="inst">CQUniversity Australia</div>
+          <div class="edu-meta">
+            <span>major · <b>Cyber Security</b></span>
+            <span>minor · <b>Application Development</b></span>
+            <span>status · <b>2nd year</b></span>
+          </div>
+
+          <div class="timeline">
+            <div class="tl">
+              <div class="when">HE Term 1 · 2025</div>
+              <div class="what">Started the Bachelor of IT</div>
+              <div class="det">Cyber Security major with an Application Development minor.</div>
+            </div>
+            <div class="tl now">
+              <div class="when">Now</div>
+              <div class="what">Second year</div>
+              <div class="det">Studying alongside the Harbourline Freight AD lab.</div>
+            </div>
+            <div class="tl goal">
+              <div class="when">2027</div>
+              <div class="what">Purple team internship</div>
+              <div class="det">The next milestone I'm working toward.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section id="contact">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="sec-tag">05 · contact</div>
+        <h2 class="sec-title">Open a <span class="hl">connection.</span></h2>
+        <p class="sec-sub">Looking for a purple team intern for 2027, or just want to talk about labs and detections? Reach out.</p>
+      </div>
+
+      <!-- TODO: replace each href="#" and handle text with your real links -->
+      <div class="contact-grid">
+        <a class="panel contact-card glow-card reveal" href="https://github.com/Siddique-12300983" target="_blank" rel="noopener">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.4-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></div>
+          <div><h3>GitHub</h3><div class="handle">github.com/Siddique-12300983</div></div>
+          <span class="go">view repos <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+        </a>
+        <a class="panel contact-card pending glow-card reveal" style="--d:.08s" href="#" data-placeholder>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></svg></div>
+          <div><h3>LinkedIn</h3><div class="handle">linkedin.com/in/your-profile</div></div>
+          <span class="go">link coming soon <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+        </a>
+        <a class="panel contact-card pending glow-card reveal" style="--d:.16s" href="#" data-placeholder>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg></div>
+          <div><h3>Email</h3><div class="handle">you@example.com</div></div>
+          <span class="go">link coming soon <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+        </a>
+      </div>
+
+      <div class="panel term contact-term reveal">
+        <div class="term-bar"><i></i><i></i><i></i><span>ruxcipher · ~</span></div>
+        <div class="term-body">
+<span class="ln"><span class="p">❯</span> <span class="w">./connect.sh</span> --with siddique</span>
+<span class="ln"><span class="g">[+]</span> handshake ok · open to: <span class="c">internships</span>, <span class="c">lab collabs</span>, <span class="c">mentoring</span></span>
+<span class="ln"><span class="g">[+]</span> response time: usually within a day<span class="cursor" style="height:1em"></span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>© <span id="year"></span> Abu Bakar Siddique · ruxcipher</span>
+    <span>hand-built in HTML, CSS &amp; JS · <a href="#hero">back to top ↑</a></span>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  /* ---------- Boot sequence ---------- */
+  const bootEl = document.getElementById("boot");
+  const bootLines = document.getElementById("bootLines");
+  const bootBar = document.getElementById("bootBar");
+  const lines = [
+    '<span class="ok">[  OK  ]</span> Mounting /home/ruxcipher',
+    '<span class="ok">[  OK  ]</span> Starting kvm-lab.target',
+    '<span class="ok">[  OK  ]</span> Reached harbourline-freight.domain',
+    '<span class="ok">[  OK  ]</span> Started detect-4769.service',
+    '<span class="acc">[ INFO ]</span> loading portfolio…'
+  ];
+  let booted = false;
+
+  function finishBoot() {
+    if (booted) return;
+    booted = true;
+    bootEl.classList.add("done");
+    document.body.classList.remove("booting");
+    document.body.classList.add("loaded");
+    revealHero();
+    window.removeEventListener("keydown", finishBoot);
+    bootEl.removeEventListener("click", finishBoot);
+  }
+
+  if (reduceMotion) {
+    bootEl.style.display = "none";
+    finishBoot();
+  } else {
+    window.addEventListener("keydown", finishBoot);
+    bootEl.addEventListener("click", finishBoot);
+    lines.forEach((html, i) => {
+      const div = document.createElement("div");
+      div.className = "boot-line";
+      div.innerHTML = html;
+      bootLines.appendChild(div);
+      setTimeout(() => {
+        div.classList.add("show");
+        bootBar.style.width = ((i + 1) / (lines.length + 1)) * 100 + "%";
+      }, 160 + i * 190);
+    });
+    const grantAt = 160 + lines.length * 190 + 120;
+    setTimeout(() => {
+      if (booted) return;
+      const g = document.createElement("div");
+      g.className = "boot-line granted";
+      g.innerHTML = "<span>ACCESS GRANTED</span>";
+      bootLines.appendChild(g);
+      requestAnimationFrame(() => g.classList.add("show"));
+      bootBar.style.width = "100%";
+    }, grantAt);
+    setTimeout(finishBoot, grantAt + 650);
+  }
+
+  /* ---------- Hero reveal + terminal ---------- */
+  function revealHero() {
+    document.querySelectorAll("#hero .reveal").forEach(el => el.classList.add("in"));
+    const tl = document.querySelectorAll("#heroTerm .ln");
+    tl.forEach((ln, i) => setTimeout(() => ln.classList.add("show"), reduceMotion ? 0 : 700 + i * 85));
+    setTimeout(startTyping, reduceMotion ? 0 : 600);
+  }
+
+  /* ---------- Typing effect ---------- */
+  const roles = ["Cyber Security Student", "Purple Team Learner", "Active Directory Builder", "Aspiring Threat Hunter"];
+  const roleEl = document.getElementById("role");
+  function startTyping() {
+    if (reduceMotion) { roleEl.textContent = roles[0]; return; }
+    let r = 0, c = 0, deleting = false;
+    (function tick() {
+      const word = roles[r];
+      if (!deleting) {
+        roleEl.textContent = word.slice(0, ++c);
+        if (c === word.length) { deleting = true; return setTimeout(tick, 1800); }
+        setTimeout(tick, 55 + Math.random() * 45);
+      } else {
+        roleEl.textContent = word.slice(0, --c);
+        if (c === 0) { deleting = false; r = (r + 1) % roles.length; return setTimeout(tick, 350); }
+        setTimeout(tick, 28);
+      }
+    })();
+  }
+
+  /* ---------- Scroll reveals ---------- */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+  document.querySelectorAll("section:not(#hero) .reveal").forEach(el => io.observe(el));
+
+  // Stagger skill tags
+  document.querySelectorAll(".tags").forEach(list => {
+    list.querySelectorAll(".tag").forEach((t, i) => t.style.setProperty("--td", 0.25 + i * 0.06 + "s"));
+  });
+
+  /* ---------- Nav: scrolled state, active link, mobile menu ---------- */
+  const nav = document.getElementById("nav");
+  const menuBtn = document.getElementById("menuBtn");
+  const navLinks = document.getElementById("navLinks");
+  const links = [...navLinks.querySelectorAll("a")];
+
+  const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 20);
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  function setMenu(open) {
+    menuBtn.setAttribute("aria-expanded", open);
+    navLinks.classList.toggle("open", open);
+    nav.classList.toggle("menu-open", open);
+  }
+  menuBtn.addEventListener("click", () => setMenu(menuBtn.getAttribute("aria-expanded") !== "true"));
+  links.forEach(a => a.addEventListener("click", () => setMenu(false)));
+  window.addEventListener("keydown", e => { if (e.key === "Escape") setMenu(false); });
+
+  const sectionIO = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+      }
+    });
+  }, { rootMargin: "-45% 0px -50% 0px" });
+  document.querySelectorAll("main section").forEach(s => sectionIO.observe(s));
+
+  /* ---------- Card spotlight follows pointer ---------- */
+  document.querySelectorAll(".glow-card").forEach(card => {
+    card.addEventListener("pointermove", e => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", e.clientX - r.left + "px");
+      card.style.setProperty("--my", e.clientY - r.top + "px");
+    });
+  });
+
+  // Placeholder contact cards shouldn't jump to the top of the page
+  document.querySelectorAll("[data-placeholder]").forEach(a => a.addEventListener("click", e => e.preventDefault()));
+
+  /* ---------- Background particle network ---------- */
+  const canvas = document.getElementById("net");
+  const ctx = canvas.getContext("2d");
+  let w, h, dpr, pts = [], raf = null;
+  const mouse = { x: -9999, y: -9999 };
+  const LINK = 130;
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = window.innerWidth; h = window.innerHeight;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const count = Math.min(90, Math.floor((w * h) / 16000));
+    pts = Array.from({ length: count }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: (Math.random() - 0.5) * 0.25,
+      r: Math.random() * 1.4 + 0.6,
+      c: Math.random() < 0.7 ? "0,200,255" : "123,92,255"
+    }));
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    for (let i = 0; i < pts.length; i++) {
+      const p = pts[i];
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+
+      const mdx = p.x - mouse.x, mdy = p.y - mouse.y;
+      const md = Math.hypot(mdx, mdy);
+      if (md < 120 && md > 0) { p.x += (mdx / md) * 0.6; p.y += (mdy / md) * 0.6; }
+
+      for (let j = i + 1; j < pts.length; j++) {
+        const q = pts[j];
+        const dx = p.x - q.x, dy = p.y - q.y;
+        const d = dx * dx + dy * dy;
+        if (d < LINK * LINK) {
+          const a = (1 - Math.sqrt(d) / LINK) * 0.22;
+          ctx.strokeStyle = `rgba(${p.c},${a})`;
+          ctx.lineWidth = 0.8;
+          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+        }
+      }
+      ctx.fillStyle = `rgba(${p.c},0.75)`;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+    }
+    raf = requestAnimationFrame(draw);
+  }
+
+  resize();
+  if (reduceMotion) {
+    draw(); cancelAnimationFrame(raf);
+  } else {
+    draw();
+    let rt;
+    window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(resize, 150); });
+    window.addEventListener("pointermove", e => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) { cancelAnimationFrame(raf); raf = null; }
+      else if (!raf) draw();
+    });
+  }
+})();
+</script>
+</body>
+</html>
