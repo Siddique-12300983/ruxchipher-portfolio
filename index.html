@@ -454,9 +454,39 @@
   .foot { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; color: var(--dim); }
   .foot a:hover { color: var(--cyan); }
 
+  /* ---------- Workstation ---------- */
+  .desk {
+    padding: 18px; overflow: hidden;
+    background:
+      linear-gradient(rgba(0, 200, 255, 0.04) 1px, transparent 1px) 0 0 / 28px 28px,
+      linear-gradient(90deg, rgba(0, 200, 255, 0.04) 1px, transparent 1px) 0 0 / 28px 28px,
+      #020308;
+  }
+  .desk-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-family: var(--mono); font-size: 12px; color: var(--dim); margin-bottom: 16px; flex-wrap: wrap; }
+  .desk-bar b { color: var(--muted); font-weight: 500; }
+  .desk-grid { display: grid; grid-template-columns: 750fr 370fr; gap: 16px; align-items: start; }
+  .desk-col { display: grid; gap: 16px; }
+  .shot { position: relative; margin: 0; }
+  .shot img { display: block; width: 100%; height: auto; border-radius: 12px; }
+  .shot.half { width: 49.3%; }
+  .shot figcaption {
+    position: absolute; left: 10px; bottom: 10px;
+    font-family: var(--mono); font-size: 11px; color: var(--text);
+    padding: 3px 8px; border-radius: 6px; background: rgba(5, 7, 15, 0.8); border: 1px solid var(--line-strong);
+    opacity: 0; transform: translateY(4px); transition: opacity 0.3s, transform 0.3s var(--ease);
+  }
+  .shot:hover figcaption { opacity: 1; transform: none; }
+  .desk-note { margin-top: 14px; font-family: var(--mono); font-size: 11px; color: var(--dim); }
+
+  .ws-grid { margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+  .ws-list { margin-top: 18px; list-style: none; display: grid; gap: 10px; }
+  .ws-list li { display: flex; gap: 12px; font-size: 15px; color: var(--muted); }
+  .ws-list li::before { content: "▸"; color: var(--cyan); flex: none; }
+  .ws-list strong { color: var(--text); font-weight: 600; }
+
   /* ---------- Responsive ---------- */
   @media (max-width: 980px) {
-    .hero-grid, .about-grid, .lab-grid { grid-template-columns: 1fr; }
+    .hero-grid, .about-grid, .lab-grid, .ws-grid { grid-template-columns: 1fr; }
     .skills-grid, .contact-grid { grid-template-columns: 1fr 1fr; }
     .skill-col.dev { grid-column: 1 / -1; }
     .contact-card:last-child { grid-column: 1 / -1; }
@@ -465,6 +495,12 @@
 
   @media (max-width: 760px) {
     :root { --nav-h: 62px; }
+    .desk { padding: 12px; }
+    .desk-grid { grid-template-columns: 1fr; gap: 12px; }
+    .desk-col { gap: 12px; }
+    .shot.half { width: 100%; }
+    .shot figcaption { opacity: 1; transform: none; }
+    .desk-bar span:last-child { display: none; }
     section { padding: 84px 0; }
     .sec-head { margin-bottom: 40px; }
     .menu-btn { display: block; }
@@ -524,9 +560,10 @@
     <ul class="nav-links" id="navLinks">
       <li><a href="#about"><span class="num">01.</span>about</a></li>
       <li><a href="#lab"><span class="num">02.</span>lab</a></li>
-      <li><a href="#skills"><span class="num">03.</span>skills</a></li>
-      <li><a href="#education"><span class="num">04.</span>education</a></li>
-      <li><a href="#contact"><span class="num">05.</span>contact</a></li>
+      <li><a href="#workstation"><span class="num">03.</span>workstation</a></li>
+      <li><a href="#skills"><span class="num">04.</span>skills</a></li>
+      <li><a href="#education"><span class="num">05.</span>education</a></li>
+      <li><a href="#contact"><span class="num">06.</span>contact</a></li>
     </ul>
   </div>
 </nav>
@@ -744,11 +781,82 @@
     </div>
   </section>
 
+  <!-- ============ WORKSTATION ============ -->
+  <section id="workstation">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="sec-tag">03 · workstation</div>
+        <h2 class="sec-title">A desktop that<br><span class="hl">watches its own back.</span></h2>
+        <p class="sec-sub">My Arch Linux laptop, customised into a security-aware workstation: custom-coded widgets that monitor the system and my lab, and a small service that alerts me to suspicious activity.</p>
+      </div>
+
+      <div class="panel desk reveal">
+        <div class="desk-bar"><span><b>ruxchipher@arch</b> · GNOME on Wayland · Tokyo Night</span><span>hover a widget for its source file</span></div>
+        <div class="desk-grid">
+          <div class="desk-col">
+            <figure class="shot"><img src="assets/workstation/left-panels.png" alt="Desktop widgets: greeting with a cyber security tip, a mission tracker counting down to 2027 with lab objectives and a commit heatmap, and a Sydney weather and calendar panel" width="750" height="786" loading="lazy"><figcaption>left.lua</figcaption></figure>
+            <figure class="shot half"><img src="assets/workstation/now-playing.png" alt="Now playing widget with album art, track title and progress bar" width="370" height="166" loading="lazy"><figcaption>media.lua</figcaption></figure>
+          </div>
+          <div class="desk-col">
+            <figure class="shot"><img src="assets/workstation/hud.png" alt="System monitor HUD with clock, CPU, RAM and GPU gauge rings, network graph, storage, battery and top processes" width="370" height="810" loading="lazy"><figcaption>hud.lua</figcaption></figure>
+            <figure class="shot"><img src="assets/workstation/lab-widget.png" alt="Lab widget showing the DC01, WIN11 and KALI virtual machines with live status and CPU usage" width="370" height="166" loading="lazy"><figcaption>lab.lua</figcaption></figure>
+          </div>
+        </div>
+        <p class="desk-note">// lab and now-playing widgets shown with preview data · Wi-Fi name and IP blurred</p>
+      </div>
+
+      <div class="ws-grid">
+        <div class="panel lab-card glow-card reveal">
+          <div class="hunt-head">
+            <h3>sentinel: host alerting</h3>
+            <span class="eid">blue team</span>
+          </div>
+          <p>A Python service I wrote that runs in the background and sends a desktop alert when something looks wrong.</p>
+          <ul class="ws-list">
+            <li><span>Follows the <strong>systemd journal</strong> for failed passwords: sudo, admin prompts, the login screen and SSH.</span></li>
+            <li><span>Polls <strong>listening TCP ports</strong> and flags any new one, marked critical if it's reachable from the network.</span></li>
+            <li><span>De-duplicates repeats and writes every alert to a log for review.</span></li>
+          </ul>
+          <div class="panel term" style="margin-top:22px">
+            <div class="term-bar"><i></i><i></i><i></i><span>events.log · my own test run</span></div>
+            <div class="term-body">
+<span class="ln"><span class="r">[!]</span> <span class="w">Failed password</span>  <span class="cm">|</span>  source: <span class="c">sudo</span></span>
+<span class="ln"><span class="r">[!]</span> <span class="w">New listening port</span> <span class="y">(network-exposed)</span></span>
+<span class="ln">    0.0.0.0:48765  <span class="cm">·</span>  process: <span class="c">python</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel lab-card glow-card reveal" style="--d:.08s">
+          <div class="hunt-head">
+            <h3>ruxchipher HUD</h3>
+            <span class="eid" style="color:var(--purple);border-color:rgba(123,92,255,.4);background:rgba(123,92,255,.1)">Lua · cairo</span>
+          </div>
+          <p>Four desktop widgets drawn from scratch in Lua with the cairo graphics library, running on Conky.</p>
+          <ul class="ws-list">
+            <li><span><strong>Battery-aware GPU polling:</strong> checks the GPU's power state first, so the monitor never wakes the RTX 4060.</span></li>
+            <li><span><strong>Live lab status:</strong> reads <code>virsh domstats</code> to show which VMs are running and how busy they are.</span></li>
+            <li><span><strong>Mission tracker:</strong> my 2027 goal, lab objectives and a commit streak pulled from my lab repo's git history.</span></li>
+            <li><span>Non-blocking data: weather and album art are fetched in the background, and the media widget hides itself when nothing is playing.</span></li>
+          </ul>
+          <a class="repo" href="https://github.com/Siddique-12300983/ruxchipher-dotfiles" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.4-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg>
+            <div>
+              <div class="rn"><span>Siddique-12300983 /</span> ruxchipher-dotfiles</div>
+              <div class="rd">All widget, sentinel and terminal configs</div>
+            </div>
+            <span class="arr">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ SKILLS ============ -->
   <section id="skills">
     <div class="wrap">
       <div class="sec-head reveal">
-        <div class="sec-tag">03 · skills</div>
+        <div class="sec-tag">04 · skills</div>
         <h2 class="sec-title">Both sides <span class="hl">of the wire.</span></h2>
         <p class="sec-sub">Tools and concepts I've used hands-on in my lab and coursework.</p>
       </div>
@@ -775,6 +883,8 @@
             <li class="tag">Kerberoasting detection</li>
             <li class="tag">Event ID 4769</li>
             <li class="tag">Wireshark</li>
+            <li class="tag">journald log monitoring</li>
+            <li class="tag">systemd</li>
           </ul>
         </div>
         <div class="panel skill-col dev glow-card reveal" style="--d:.16s">
@@ -788,6 +898,9 @@
             <li class="tag">Git</li>
             <li class="tag">Arch Linux</li>
             <li class="tag">KVM</li>
+            <li class="tag">libvirt</li>
+            <li class="tag">Lua</li>
+            <li class="tag">Bash</li>
           </ul>
         </div>
       </div>
@@ -803,7 +916,7 @@
   <section id="education">
     <div class="wrap">
       <div class="sec-head reveal">
-        <div class="sec-tag">04 · education</div>
+        <div class="sec-tag">05 · education</div>
         <h2 class="sec-title">Where the <span class="hl">theory</span> comes in.</h2>
       </div>
 
@@ -846,7 +959,7 @@
   <section id="contact">
     <div class="wrap">
       <div class="sec-head reveal">
-        <div class="sec-tag">05 · contact</div>
+        <div class="sec-tag">06 · contact</div>
         <h2 class="sec-title">Open a <span class="hl">connection.</span></h2>
         <p class="sec-sub">Looking for a purple team intern for 2027, or just want to talk about labs and detections? Reach out.</p>
       </div>
