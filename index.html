@@ -611,7 +611,7 @@
             <span class="ln"><span class="p">❯</span> <span class="w">systemctl</span> status homelab</span>
             <span class="ln"><span class="g">●</span> homelab.service <span class="cm">- AD lab</span></span>
             <span class="ln">  Active: <span class="g">active (running)</span></span>
-            <span class="ln">  Next:   <span class="c">sysmon + wazuh</span><span class="cursor" style="height:1em"></span></span>
+            <span class="ln">  Next:   <span class="c">kerberoast + wazuh</span><span class="cursor" style="height:1em"></span></span>
           </div>
         </div>
       </div>
@@ -667,9 +667,9 @@
       <div class="lab-grid">
         <div class="panel lab-card glow-card reveal">
           <h3>Network topology <span class="badge">● online</span></h3>
-          <p>Every VM runs under KVM on an Arch Linux host. The attacker box sits on an isolated network with no route to anything real.</p>
+          <p>Every VM runs under KVM on an Arch Linux host. The attacker box sits on its own NAT lab network, and nothing outside can reach in.</p>
 
-          <svg class="topo" viewBox="0 0 520 380" role="img" aria-label="Lab topology: an Arch Linux KVM host runs an isolated lab network with a Windows Server 2025 domain controller, a Windows 11 client and a Kali Linux attacker.">
+          <svg class="topo" viewBox="0 0 520 380" role="img" aria-label="Lab topology: an Arch Linux KVM host runs a NAT lab network with a Windows Server 2025 domain controller, a Windows 11 client and a Kali Linux attacker.">
             <defs>
               <linearGradient id="gH" x1="0" x2="1"><stop offset="0" stop-color="#00c8ff"/><stop offset="1" stop-color="#7b5cff"/></linearGradient>
             </defs>
@@ -677,9 +677,9 @@
             <rect x="8" y="8" width="504" height="364" rx="16" fill="none" stroke="rgba(120,140,200,.25)" stroke-dasharray="5 5"/>
             <text x="26" y="34" fill="#5a6480" font-size="11">HOST · Arch Linux + KVM/QEMU</text>
 
-            <!-- isolated net box -->
+            <!-- NAT lab net box -->
             <rect x="24" y="48" width="472" height="308" rx="12" fill="rgba(123,92,255,.04)" stroke="rgba(123,92,255,.3)"/>
-            <text x="40" y="70" fill="#7b5cff" font-size="11">ISOLATED LAB NETWORK · no internet</text>
+            <text x="40" y="70" fill="#7b5cff" font-size="11">LAB NETWORK · NAT, no inbound</text>
 
             <!-- switch -->
             <g class="node">
@@ -724,8 +724,9 @@
             <div><dt>host</dt><dd>Arch Linux · KVM / QEMU</dd></div>
             <div><dt>dc</dt><dd>Windows Server 2025 (AD DS)</dd></div>
             <div><dt>client</dt><dd>Windows 11, domain-joined</dd></div>
-            <div><dt>attacker</dt><dd>Kali Linux on the isolated network</dd></div>
+            <div><dt>attacker</dt><dd>Kali Linux on the lab network</dd></div>
             <div><dt>org</dt><dd>Harbourline Freight · 12 users · OUs · GPOs</dd></div>
+            <div><dt>logging</dt><dd>Advanced audit GPO · Sysmon on client</dd></div>
           </dl>
         </div>
 
@@ -735,7 +736,7 @@
               <h3>Kerberoasting: attack &amp; detect</h3>
               <span class="eid">Event ID 4769</span>
             </div>
-            <p>A service account with an SPN is set up on purpose. I request its ticket from Kali, then hunt for that request in the domain controller's Security log.</p>
+            <p>A service account with an SPN is set up on purpose, ready to be Kerberoasted from Kali and hunted as Event 4769 in the domain controller's Security log.</p>
 
             <div class="chain">
               <div class="red"><div class="t">Red</div><p>Register an SPN, request a TGS for the service account from Kali.</p></div>
@@ -759,11 +760,12 @@
           <div class="panel lab-card glow-card reveal" style="--d:.14s">
             <h3>Roadmap</h3>
             <ul class="roadmap">
-              <li><span class="st done">done</span>KVM host on Arch Linux, isolated lab network</li>
+              <li><span class="st done">done</span>KVM host on Arch Linux, NAT lab network</li>
               <li><span class="st done">done</span>Windows Server 2025 DC + Windows 11 client</li>
               <li><span class="st done">done</span>Harbourline Freight: 12 users, OUs, GPOs</li>
-              <li><span class="st done">done</span>SPN for Kerberoasting + 4769 detection</li>
-              <li><span class="st next"><span class="next-dot">▸</span> next</span><span>Sysmon for deeper endpoint telemetry</span></li>
+              <li><span class="st done">done</span>Audit policy GPO: 4688 with command lines, logons, group changes</li>
+              <li><span class="st done">done</span>Sysmon on Windows 11 for deeper endpoint telemetry</li>
+              <li><span class="st next"><span class="next-dot">▸</span> next</span><span>Kerberoast from Kali + catch 4769</span></li>
               <li><span class="st next"><span class="next-dot">▸</span> next</span><span>Wazuh SIEM for central alerting</span></li>
             </ul>
 
@@ -875,7 +877,6 @@
           <p>Thinking like the attacker so the defence has something real to catch.</p>
           <ul class="tags">
             <li class="tag">Kali Linux</li>
-            <li class="tag">Kerberoasting</li>
             <li class="tag">SPN enumeration</li>
             <li class="tag">Networking</li>
           </ul>
@@ -887,8 +888,10 @@
           <ul class="tags">
             <li class="tag">Active Directory</li>
             <li class="tag">GPO</li>
-            <li class="tag">Kerberoasting detection</li>
-            <li class="tag">Event ID 4769</li>
+            <li class="tag">Windows audit policy</li>
+            <li class="tag">Sysmon</li>
+            <li class="tag">Event IDs 4688 · 4624 · 4625 · 4728</li>
+            <li class="tag">NTP &amp; Kerberos time sync</li>
             <li class="tag">Wireshark</li>
             <li class="tag">journald log monitoring</li>
             <li class="tag">systemd</li>
