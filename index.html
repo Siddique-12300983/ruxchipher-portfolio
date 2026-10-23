@@ -611,7 +611,7 @@
             <span class="ln"><span class="p">❯</span> <span class="w">systemctl</span> status homelab</span>
             <span class="ln"><span class="g">●</span> homelab.service <span class="cm">- AD lab</span></span>
             <span class="ln">  Active: <span class="g">active (running)</span></span>
-            <span class="ln">  Next:   <span class="c">kerberoast + wazuh</span><span class="cursor" style="height:1em"></span></span>
+            <span class="ln">  Next:   <span class="c">wazuh + sigma</span><span class="cursor" style="height:1em"></span></span>
           </div>
         </div>
       </div>
@@ -765,7 +765,7 @@
               <li><span class="st done">done</span>Harbourline Freight: 12 users, OUs, GPOs</li>
               <li><span class="st done">done</span>Audit policy GPO: 4688 with command lines, logons, group changes</li>
               <li><span class="st done">done</span>Sysmon on Windows 11 for deeper endpoint telemetry</li>
-              <li><span class="st next"><span class="next-dot">▸</span> next</span><span>Kerberoast from Kali + catch 4769</span></li>
+              <li><span class="st done">done</span>Kerberoast from Kali, caught it as 4769 (AES, not the classic RC4)</li>
               <li><span class="st next"><span class="next-dot">▸</span> next</span><span>Wazuh SIEM for central alerting</span></li>
             </ul>
 
@@ -877,7 +877,10 @@
           <p>Thinking like the attacker so the defence has something real to catch.</p>
           <ul class="tags">
             <li class="tag">Kali Linux</li>
+            <li class="tag">Kerberoasting</li>
             <li class="tag">SPN enumeration</li>
+            <li class="tag">Rubeus · impacket</li>
+            <li class="tag">hashcat</li>
             <li class="tag">Networking</li>
           </ul>
         </div>
