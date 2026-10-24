@@ -10,10 +10,6 @@
 <meta name="color-scheme" content="dark">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 
-<!-- PREVIEW VERSION (v2): keeps search engines from indexing this copy.
-     If the client picks v2 and it moves to the site root, delete this line. -->
-<meta name="robots" content="noindex">
-
 <!-- SITE URL: replace https://ruxchipher.com/ everywhere (this file, robots.txt, sitemap.xml) if you use another domain -->
 <link rel="canonical" href="https://ruxchipher.com/">
 
@@ -93,11 +89,12 @@
     <ul class="nav-links" id="navLinks">
       <li><a href="#lab"><span class="num">01.</span>lab</a></li>
       <li><a href="#detections"><span class="num">02.</span>detections</a></li>
-      <li><a href="#workstation"><span class="num">03.</span>workstation</a></li>
-      <li><a href="#skills"><span class="num">04.</span>skills</a></li>
-      <li><a href="#about"><span class="num">05.</span>about</a></li>
-      <li><a href="#journey"><span class="num">06.</span>journey</a></li>
-      <li><a href="#contact"><span class="num">07.</span>contact</a></li>
+      <li><a href="#toolkit"><span class="num">03.</span>toolkit</a></li>
+      <li><a href="#workstation"><span class="num">04.</span>workstation</a></li>
+      <li><a href="#skills"><span class="num">05.</span>skills</a></li>
+      <li><a href="#about"><span class="num">06.</span>about</a></li>
+      <li><a href="#journey"><span class="num">07.</span>journey</a></li>
+      <li><a href="#contact"><span class="num">08.</span>contact</a></li>
     </ul>
   </nav>
 </header>
@@ -196,7 +193,7 @@
   <section id="lab" class="section" aria-labelledby="lab-title">
     <div class="wrap">
       <div class="sec-head reveal">
-        <p class="sec-tag">02 · home lab</p>
+        <p class="sec-tag">01 · home lab</p>
         <h2 id="lab-title" class="sec-title">Harbourline Freight<span class="hl">.</span><br><span class="hl">A fake company I attack and defend.</span></h2>
         <p class="sec-sub">A full Active Directory environment virtualised on my own machine, built to practise real attacks and the detections that catch them.</p>
       </div>
@@ -281,7 +278,7 @@
   <section id="detections" class="section" aria-labelledby="det-title">
     <div class="wrap">
       <div class="sec-head reveal">
-        <p class="sec-tag">04 · detections</p>
+        <p class="sec-tag">02 · detections</p>
         <h2 id="det-title" class="sec-title">Attack. Detect. <span class="hl">Document.</span></h2>
         <p class="sec-sub">Each technique I run in the lab becomes a write-up with the detection that catches it.</p>
       </div>
@@ -357,13 +354,99 @@
       <div class="next-grid">
         <article class="panel card next-card lift reveal d1">
           <span class="chip chip-cyan">next up</span>
-          <h3 class="card-title">Endpoint telemetry with Sysmon</h3>
-          <p class="card-text">Add Sysmon to the DC and workstation for process, network and registry events the Security log can't see.</p>
+          <h3 class="card-title">Central alerting with Wazuh</h3>
+          <p class="card-text">Ship lab logs into Wazuh so detections like this one fire as real alerts instead of manual hunts.</p>
         </article>
         <article class="panel card next-card lift reveal d2">
           <span class="chip chip-cyan">next up</span>
-          <h3 class="card-title">Central alerting with Wazuh</h3>
-          <p class="card-text">Ship lab logs into Wazuh so detections like this one fire as real alerts instead of manual hunts.</p>
+          <h3 class="card-title">LLMNR / NBT-NS poisoning</h3>
+          <p class="card-text">The next attack-and-detect loop: poison name resolution from Kali, then catch the responder traffic. A Sigma rule for it is already in my detection-rules repo.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TOOLKIT ================= -->
+  <section id="toolkit" class="section" aria-labelledby="toolkit-title">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-tag">03 · toolkit</p>
+        <h2 id="toolkit-title" class="sec-title">Tools I've <span class="hl">built.</span></h2>
+        <p class="sec-sub">Small, focused projects from the detection and blue-team work around my lab. Each one is its own repo with a README, tests and CI.</p>
+      </div>
+
+      <p class="tool-sub">// security tooling</p>
+      <div class="tool-grid reveal">
+        <a class="repo" href="https://github.com/Siddique-12300983/log-analyzer" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
+          <span class="repo-text"><span class="rn">log-analyzer</span><span class="rd">Flags brute-force and Kerberoasting in auth logs</span></span>
+          <span class="arr" aria-hidden="true">↗</span>
+        </a>
+        <a class="repo" href="https://github.com/Siddique-12300983/sigma-detection-rules" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
+          <span class="repo-text"><span class="rn">sigma-detection-rules</span><span class="rd">Sigma rules mapped to MITRE ATT&amp;CK</span></span>
+          <span class="arr" aria-hidden="true">↗</span>
+        </a>
+        <a class="repo" href="https://github.com/Siddique-12300983/phishing-email-analyzer" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
+          <span class="repo-text"><span class="rn">phishing-email-analyzer</span><span class="rd">Offline .eml triage: headers, auth, URLs, red flags</span></span>
+          <span class="arr" aria-hidden="true">↗</span>
+        </a>
+        <a class="repo" href="https://github.com/Siddique-12300983/ioc-extractor" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
+          <span class="repo-text"><span class="rn">ioc-extractor</span><span class="rd">Pulls IOCs from text, handles defanged input</span></span>
+          <span class="arr" aria-hidden="true">↗</span>
+        </a>
+        <a class="repo" href="https://github.com/Siddique-12300983/file-integrity-monitor" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
+          <span class="repo-text"><span class="rn">file-integrity-monitor</span><span class="rd">SHA-256 baseline and change detection for a directory</span></span>
+          <span class="arr" aria-hidden="true">↗</span>
+        </a>
+        <a class="repo" href="https://github.com/Siddique-12300983/linux-hardening-script" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
+          <span class="repo-text"><span class="rn">linux-hardening-script</span><span class="rd">Idempotent Debian/Ubuntu hardening with a dry run</span></span>
+          <span class="arr" aria-hidden="true">↗</span>
+        </a>
+        <a class="repo" href="https://github.com/Siddique-12300983/password-breach-checker" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
+          <span class="repo-text"><span class="rn">password-breach-checker</span><span class="rd">Checks a password against HIBP using k-anonymity</span></span>
+          <span class="arr" aria-hidden="true">↗</span>
+        </a>
+        <a class="repo" href="https://github.com/Siddique-12300983" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
+          <span class="repo-text"><span class="rn">more on GitHub</span><span class="rd">Every repo, with source and tests</span></span>
+          <span class="arr" aria-hidden="true">↗</span>
+        </a>
+      </div>
+
+      <p class="tool-sub">// browser demos · live, nothing sent anywhere</p>
+      <div class="demo-grid">
+        <article class="panel card demo-card lift reveal">
+          <span class="chip chip-green">live</span>
+          <h3 class="card-title">Password strength visualizer</h3>
+          <p class="card-text">Type a password and watch a live meter, entropy estimate and crack time. All in the browser.</p>
+          <div class="demo-links">
+            <a class="btn btn-primary btn-sm" href="https://siddique-12300983.github.io/password-strength-visualizer/" target="_blank" rel="noopener noreferrer">open ↗</a>
+            <a class="text-link" href="https://github.com/Siddique-12300983/password-strength-visualizer" target="_blank" rel="noopener noreferrer">source</a>
+          </div>
+        </article>
+        <article class="panel card demo-card lift reveal d1">
+          <span class="chip chip-green">live</span>
+          <h3 class="card-title">Network attack map</h3>
+          <p class="card-text">An animated world map of simulated cyber attacks, drawn on canvas. Random data, clearly labelled.</p>
+          <div class="demo-links">
+            <a class="btn btn-primary btn-sm" href="https://siddique-12300983.github.io/network-attack-map/" target="_blank" rel="noopener noreferrer">open ↗</a>
+            <a class="text-link" href="https://github.com/Siddique-12300983/network-attack-map" target="_blank" rel="noopener noreferrer">source</a>
+          </div>
+        </article>
+        <article class="panel card demo-card lift reveal d2">
+          <span class="chip chip-green">live</span>
+          <h3 class="card-title">Typing speed test</h3>
+          <p class="card-text">A clean typing game with live WPM, accuracy and a best score. Something to share and play.</p>
+          <div class="demo-links">
+            <a class="btn btn-primary btn-sm" href="https://siddique-12300983.github.io/typing-speed-game/" target="_blank" rel="noopener noreferrer">open ↗</a>
+            <a class="text-link" href="https://github.com/Siddique-12300983/typing-speed-game" target="_blank" rel="noopener noreferrer">source</a>
+          </div>
         </article>
       </div>
     </div>
@@ -373,7 +456,7 @@
   <section id="workstation" class="section" aria-labelledby="ws-title">
     <div class="wrap">
       <div class="sec-head reveal">
-        <p class="sec-tag">03 · workstation</p>
+        <p class="sec-tag">04 · workstation</p>
         <h2 id="ws-title" class="sec-title">A desktop that<br><span class="hl">watches its own back.</span></h2>
         <p class="sec-sub">My Arch Linux laptop, customised into a security-aware workstation: custom-coded widgets that monitor the system and my lab, and a small service that alerts me to suspicious activity.</p>
       </div>
@@ -471,6 +554,8 @@
             <li class="tag">GPO</li>
             <li class="tag">Kerberoasting detection</li>
             <li class="tag">Event ID 4769</li>
+            <li class="tag">Sysmon</li>
+            <li class="tag">Sigma</li>
             <li class="tag">Wireshark</li>
           </ul>
         </div>
@@ -482,6 +567,7 @@
             <li class="tag">Python</li>
             <li class="tag">Java</li>
             <li class="tag">JDBC</li>
+            <li class="tag">Bash</li>
             <li class="tag">Git</li>
             <li class="tag">Arch Linux</li>
             <li class="tag">KVM</li>
@@ -500,7 +586,7 @@
   <section id="about" class="section" aria-labelledby="about-title">
     <div class="wrap">
       <div class="sec-head reveal">
-        <p class="sec-tag">01 · about</p>
+        <p class="sec-tag">06 · about</p>
         <h2 id="about-title" class="sec-title">Build the lab first.<br><span class="hl">Learn the theory second.</span></h2>
       </div>
       <div class="about-grid">
@@ -527,7 +613,7 @@
   <section id="journey" class="section" aria-labelledby="journey-title">
     <div class="wrap">
       <div class="sec-head reveal">
-        <p class="sec-tag">06 · journey</p>
+        <p class="sec-tag">07 · journey</p>
         <h2 id="journey-title" class="sec-title">Study, work and <span class="hl">where it's heading.</span></h2>
       </div>
 
@@ -589,7 +675,7 @@
   <section id="contact" class="section" aria-labelledby="contact-title">
     <div class="wrap">
       <div class="sec-head reveal">
-        <p class="sec-tag">07 · contact</p>
+        <p class="sec-tag">08 · contact</p>
         <h2 id="contact-title" class="sec-title">Open a <span class="hl">connection.</span></h2>
         <p class="sec-sub">Looking for a purple team intern for 2027, or want to talk about labs and detections? Reach out. I usually reply within a day.</p>
       </div>
