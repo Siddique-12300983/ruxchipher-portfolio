@@ -1,723 +1,244 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Abu Bakar Siddique · ruxchipher</title>
-<meta name="description" content="Abu Bakar Siddique (ruxchipher) — Cyber Security student at CQUniversity, Sydney. Building Active Directory labs on the path to a purple team internship in 2027.">
+<meta name="description" content="Abu Bakar Siddique (ruxchipher): Cyber Security student at CQUniversity, Sydney. Building an Active Directory lab, attacking it and writing the detections, on the path to a purple team internship in 2027.">
+<meta name="author" content="Abu Bakar Siddique">
 <meta name="theme-color" content="#05070f">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2305070f'/%3E%3Cpath d='M16 22l12 10-12 10' stroke='%2300c8ff' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M32 44h16' stroke='%237b5cff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+<meta name="color-scheme" content="dark">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+
+<!-- PREVIEW VERSION (v2): keeps search engines from indexing this copy.
+     If the client picks v2 and it moves to the site root, delete this line. -->
+<meta name="robots" content="noindex">
+
+<!-- SITE URL: replace https://ruxchipher.com/ everywhere (this file, robots.txt, sitemap.xml) if you use another domain -->
+<link rel="canonical" href="https://ruxchipher.com/">
+
+<!-- Social preview (LinkedIn, Discord, X, WhatsApp) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ruxchipher">
+<meta property="og:locale" content="en_AU">
+<meta property="og:url" content="https://ruxchipher.com/">
+<meta property="og:title" content="Abu Bakar Siddique · ruxchipher">
+<meta property="og:description" content="Cyber Security student building an AD lab: attack it, log it, detect it, harden it. Seeking a purple team internship for 2027.">
+<meta property="og:image" content="https://ruxchipher.com/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ruxchipher: Abu Bakar Siddique, purple team learner">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Abu Bakar Siddique · ruxchipher">
+<meta name="twitter:description" content="AD lab builder. Attack it, log it, detect it, harden it.">
+<meta name="twitter:image" content="https://ruxchipher.com/assets/og-image.png">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #05070f;
-    --bg-2: #0a0e1c;
-    --panel: rgba(13, 18, 36, 0.72);
-    --panel-solid: #0d1224;
-    --line: rgba(120, 140, 200, 0.14);
-    --line-strong: rgba(120, 140, 200, 0.28);
-    --text: #e6ebf5;
-    --muted: #8c96b0;
-    --dim: #5a6480;
-    --cyan: #00c8ff;
-    --purple: #7b5cff;
-    --green: #3ddc97;
-    --red: #ff5c7a;
-    --amber: #ffb547;
-    --grad: linear-gradient(120deg, var(--cyan), var(--purple));
-    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    --radius: 14px;
-    --nav-h: 68px;
-    --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  }
+<link rel="stylesheet" href="css/style.css">
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<!-- boot.js must stay synchronous: it sets the html class before first paint -->
+<script src="js/boot.js"></script>
+<script src="js/main.js" defer></script>
 
-  html { scroll-behavior: smooth; scroll-padding-top: var(--nav-h); -webkit-text-size-adjust: 100%; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 16px;
-    line-height: 1.65;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  body.booting { overflow: hidden; }
-
-  ::selection { background: rgba(0, 200, 255, 0.28); color: #fff; }
-
-  a { color: inherit; text-decoration: none; }
-
-  :focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 6px; }
-
-  .mono { font-family: var(--mono); }
-
-  /* ---------- Background layers ---------- */
-  #net {
-    position: fixed; inset: 0; z-index: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-  }
-
-  .grid-overlay {
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    background-image:
-      linear-gradient(rgba(0, 200, 255, 0.045) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 200, 255, 0.045) 1px, transparent 1px);
-    background-size: 56px 56px;
-    mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, #000 30%, transparent 100%);
-    -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, #000 30%, transparent 100%);
-    animation: gridDrift 40s linear infinite;
-  }
-
-  @keyframes gridDrift { to { background-position: 56px 56px, 56px 56px; } }
-
-  .glow {
-    position: fixed; z-index: 0; pointer-events: none;
-    width: 60vmax; height: 60vmax; border-radius: 50%;
-    filter: blur(90px); opacity: 0.16;
-  }
-  .glow.g1 { background: var(--cyan); top: -25vmax; left: -20vmax; }
-  .glow.g2 { background: var(--purple); bottom: -30vmax; right: -20vmax; opacity: 0.18; }
-
-  .scanlines {
-    position: fixed; inset: 0; z-index: 1; pointer-events: none;
-    background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0, 0, 0, 0.12) 2px 3px);
-    opacity: 0.35;
-  }
-
-  main, nav, footer { position: relative; z-index: 2; }
-
-  /* ---------- Boot sequence ---------- */
-  #boot {
-    position: fixed; inset: 0; z-index: 100;
-    background: var(--bg);
-    display: flex; align-items: center; justify-content: center;
-    padding: 24px;
-    transition: opacity 0.7s var(--ease), visibility 0.7s;
-  }
-  #boot.done { opacity: 0; visibility: hidden; }
-
-  .boot-box { width: min(560px, 100%); font-family: var(--mono); font-size: 13px; color: var(--muted); }
-  .boot-line { white-space: pre-wrap; opacity: 0; transform: translateY(4px); transition: opacity 0.25s, transform 0.25s; }
-  .boot-line.show { opacity: 1; transform: none; }
-  .boot-line .ok { color: var(--green); }
-  .boot-line .acc { color: var(--cyan); }
-  .boot-line.granted { margin-top: 14px; color: var(--text); font-weight: 700; letter-spacing: 0.2em; }
-  .boot-line.granted span { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .boot-bar { margin-top: 18px; height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; }
-  .boot-bar i { display: block; height: 100%; width: 0; background: var(--grad); transition: width 0.3s var(--ease); }
-  .boot-skip { margin-top: 14px; font-size: 11px; color: var(--dim); }
-
-  /* ---------- Load-in reveal ---------- */
-  .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.9s var(--ease), transform 0.9s var(--ease); transition-delay: var(--d, 0s); }
-  .reveal.in { opacity: 1; transform: none; }
-
-  /* ---------- Nav ---------- */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-    height: var(--nav-h);
-    display: flex; align-items: center;
-    transition: background 0.4s, border-color 0.4s, backdrop-filter 0.4s;
-    border-bottom: 1px solid transparent;
-    transform: translateY(-100%);
-  }
-  body.loaded nav { transform: none; transition: transform 0.8s var(--ease) 0.15s, background 0.4s, border-color 0.4s; }
-  nav.scrolled {
-    background: rgba(5, 7, 15, 0.78);
-    backdrop-filter: blur(14px) saturate(140%);
-    -webkit-backdrop-filter: blur(14px) saturate(140%);
-    border-bottom-color: var(--line);
-  }
-
-  .nav-inner { width: min(1180px, 100% - 32px); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
-
-  .logo { font-family: var(--mono); font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 2px; }
-  .logo .tilde { color: var(--purple); }
-  .logo .name { color: var(--text); }
-  .logo .caret { display: inline-block; width: 8px; height: 17px; background: var(--cyan); margin-left: 4px; animation: blink 1.05s steps(1) infinite; }
-
-  @keyframes blink { 50% { opacity: 0; } }
-
-  .nav-links { display: flex; gap: 4px; list-style: none; }
-  .nav-links a {
-    font-family: var(--mono); font-size: 13px; color: var(--muted);
-    padding: 8px 14px; border-radius: 8px; position: relative;
-    transition: color 0.25s, background 0.25s;
-  }
-  .nav-links a .num { color: var(--cyan); opacity: 0.7; margin-right: 4px; }
-  .nav-links a:hover { color: var(--text); background: rgba(255, 255, 255, 0.04); }
-  .nav-links a.active { color: var(--text); }
-  .nav-links a::after {
-    content: ""; position: absolute; left: 14px; right: 14px; bottom: 3px; height: 1px;
-    background: var(--grad); transform: scaleX(0); transform-origin: left; transition: transform 0.35s var(--ease);
-  }
-  .nav-links a.active::after { transform: scaleX(1); }
-
-  .menu-btn {
-    display: none; background: none; border: 1px solid var(--line-strong); border-radius: 10px;
-    width: 42px; height: 42px; cursor: pointer; position: relative;
-  }
-  .menu-btn span { position: absolute; left: 11px; right: 11px; height: 2px; background: var(--text); border-radius: 2px; transition: transform 0.3s var(--ease), opacity 0.2s; }
-  .menu-btn span:nth-child(1) { top: 14px; }
-  .menu-btn span:nth-child(2) { top: 20px; }
-  .menu-btn span:nth-child(3) { top: 26px; }
-  .menu-btn[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
-  .menu-btn[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
-  .menu-btn[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
-
-  /* ---------- Layout ---------- */
-  section { padding: 120px 0; }
-  .wrap { width: min(1180px, 100% - 32px); margin: 0 auto; }
-
-  .sec-head { margin-bottom: 56px; }
-  .sec-tag { font-family: var(--mono); font-size: 13px; color: var(--cyan); display: inline-flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-  .sec-tag::before { content: ""; width: 28px; height: 1px; background: var(--cyan); }
-  .sec-title { font-size: clamp(30px, 4.4vw, 46px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-  .sec-title .hl { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .sec-sub { color: var(--muted); max-width: 620px; margin-top: 14px; font-size: 17px; }
-
-  .panel {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    position: relative;
-  }
-
-  /* Gradient border on hover */
-  .glow-card { transition: transform 0.4s var(--ease), border-color 0.4s, box-shadow 0.4s; }
-  .glow-card::before {
-    content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px;
-    background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), rgba(0, 200, 255, 0.55), rgba(123, 92, 255, 0.35) 40%, transparent 70%);
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor; mask-composite: exclude;
-    opacity: 0; transition: opacity 0.4s; pointer-events: none;
-  }
-  .glow-card:hover::before { opacity: 1; }
-  .glow-card:hover { transform: translateY(-3px); box-shadow: 0 20px 50px -20px rgba(0, 200, 255, 0.25); }
-
-  /* ---------- Hero ---------- */
-  #hero { position: relative; min-height: 100vh; min-height: 100svh; display: flex; align-items: center; padding: calc(var(--nav-h) + 40px) 0 80px; }
-  .hero-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 56px; align-items: center; }
-
-  .status-pill {
-    display: inline-flex; align-items: center; gap: 10px;
-    font-family: var(--mono); font-size: 12px; color: var(--muted);
-    padding: 7px 14px 7px 12px; border: 1px solid var(--line-strong); border-radius: 999px;
-    background: rgba(10, 14, 28, 0.6); margin-bottom: 28px;
-  }
-  .status-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.6); animation: pulse 2s infinite; }
-  @keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(61, 220, 151, 0); } 100% { box-shadow: 0 0 0 0 rgba(61, 220, 151, 0); } }
-
-  .hero-hello { font-family: var(--mono); color: var(--cyan); font-size: 15px; margin-bottom: 12px; }
-  .hero-name {
-    font-size: clamp(44px, 7.4vw, 88px); font-weight: 800; line-height: 0.98; letter-spacing: -0.045em;
-  }
-  .hero-name .last { display: block; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-
-  .codename { margin-top: 22px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 14px; color: var(--muted); }
-  .codename b {
-    color: var(--text); font-weight: 500; padding: 4px 10px; border-radius: 6px;
-    border: 1px solid rgba(123, 92, 255, 0.45); background: rgba(123, 92, 255, 0.1);
-    position: relative;
-  }
-  .codename b.glitch:hover { animation: glitch 0.4s steps(2) 2; }
-  @keyframes glitch {
-    0% { text-shadow: 2px 0 var(--cyan), -2px 0 var(--purple); transform: translateX(0); }
-    25% { text-shadow: -2px 0 var(--cyan), 2px 0 var(--purple); transform: translateX(1px); }
-    50% { text-shadow: 2px 1px var(--cyan), -2px -1px var(--purple); transform: translateX(-1px); }
-    100% { text-shadow: none; transform: none; }
-  }
-
-  .typing { margin-top: 26px; font-family: var(--mono); font-size: clamp(16px, 2.1vw, 21px); color: var(--text); min-height: 1.6em; }
-  .typing .prompt { color: var(--purple); }
-  .typing .role { color: var(--cyan); }
-  .cursor { display: inline-block; width: 0.58em; height: 1.15em; background: var(--cyan); vertical-align: -0.2em; margin-left: 3px; animation: blink 1.05s steps(1) infinite; }
-
-  .hero-lede { margin-top: 22px; color: var(--muted); font-size: 17px; max-width: 540px; }
-  .hero-lede strong { color: var(--text); font-weight: 600; }
-
-  .cta { margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap; }
-  .btn {
-    font-family: var(--mono); font-size: 14px; font-weight: 500;
-    display: inline-flex; align-items: center; gap: 10px;
-    padding: 14px 22px; border-radius: 10px; cursor: pointer;
-    transition: transform 0.3s var(--ease), box-shadow 0.3s, background 0.3s, border-color 0.3s;
-  }
-  .btn svg { width: 16px; height: 16px; transition: transform 0.3s var(--ease); }
-  .btn:hover svg { transform: translateX(3px); }
-  .btn-primary { background: var(--grad); color: #05070f; font-weight: 700; box-shadow: 0 10px 30px -10px rgba(0, 200, 255, 0.5); }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 40px -10px rgba(123, 92, 255, 0.6); }
-  .btn-ghost { border: 1px solid var(--line-strong); color: var(--text); background: rgba(10, 14, 28, 0.5); }
-  .btn-ghost:hover { border-color: var(--cyan); transform: translateY(-2px); }
-
-  /* Terminal window */
-  .term { overflow: hidden; box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 200, 255, 0.06); }
-  .term-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: rgba(5, 7, 15, 0.5); }
-  .term-bar i { width: 11px; height: 11px; border-radius: 50%; background: #2a3150; }
-  .term-bar i:nth-child(1) { background: #ff5f57; }
-  .term-bar i:nth-child(2) { background: #febc2e; }
-  .term-bar i:nth-child(3) { background: #28c840; }
-  .term-bar span { margin-left: 10px; font-family: var(--mono); font-size: 12px; color: var(--dim); }
-  .term-body { padding: 20px 20px 22px; font-family: var(--mono); font-size: 13px; line-height: 1.85; color: var(--muted); overflow-x: auto; }
-  .term-body .p { color: var(--purple); }
-  .term-body .c { color: var(--cyan); }
-  .term-body .g { color: var(--green); }
-  .term-body .w { color: var(--text); }
-  .term-body .y { color: var(--amber); }
-  .term-body .r { color: var(--red); }
-  .term-body .cm { color: var(--dim); }
-  .term-body .ln { display: block; white-space: pre; }
-  #heroTerm .ln { opacity: 0; transform: translateX(-6px); transition: opacity 0.35s, transform 0.35s; }
-  #heroTerm .ln.show { opacity: 1; transform: none; }
-
-  .scroll-hint {
-    position: absolute; left: 0; right: 0; bottom: 28px; margin: 0 auto; width: max-content;
-    font-family: var(--mono); font-size: 11px; color: var(--dim); letter-spacing: 0.2em;
-    display: flex; flex-direction: column; align-items: center; gap: 10px;
-  }
-  .scroll-hint .mouse { width: 20px; height: 32px; border: 1.5px solid var(--dim); border-radius: 12px; position: relative; }
-  .scroll-hint .mouse::after { content: ""; position: absolute; left: 50%; top: 6px; width: 2px; height: 6px; margin-left: -1px; background: var(--cyan); border-radius: 2px; animation: wheel 1.8s var(--ease) infinite; }
-  @keyframes wheel { 0% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(10px); } }
-
-  /* ---------- About ---------- */
-  .about-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 28px; }
-  .about-text { padding: 36px; }
-  .about-text p { color: var(--muted); font-size: 17px; }
-  .about-text p + p { margin-top: 18px; }
-  .about-text strong { color: var(--text); font-weight: 600; }
-  .about-text .quote {
-    margin-top: 28px; padding: 18px 20px; border-left: 2px solid var(--purple);
-    background: rgba(123, 92, 255, 0.07); border-radius: 0 10px 10px 0;
-    font-family: var(--mono); font-size: 14px; color: var(--text);
-  }
-  .about-text .quote span { color: var(--purple); }
-
-  .facts { display: grid; gap: 14px; }
-  .fact { padding: 20px 22px; display: flex; gap: 16px; align-items: flex-start; }
-  .fact .ico {
-    flex: none; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center;
-    background: rgba(0, 200, 255, 0.08); border: 1px solid rgba(0, 200, 255, 0.22); color: var(--cyan);
-  }
-  .fact:nth-child(even) .ico { background: rgba(123, 92, 255, 0.1); border-color: rgba(123, 92, 255, 0.3); color: var(--purple); }
-  .fact .ico svg { width: 20px; height: 20px; }
-  .fact .k { font-family: var(--mono); font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.12em; }
-  .fact .v { font-weight: 600; margin-top: 2px; }
-  .fact .s { font-size: 14px; color: var(--muted); }
-
-  /* ---------- Lab ---------- */
-  .lab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
-  .lab-card { padding: 30px; }
-  .lab-card h3 { font-size: 20px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 10px; }
-  .lab-card h3 .badge { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--green); border: 1px solid rgba(61, 220, 151, 0.35); background: rgba(61, 220, 151, 0.08); padding: 2px 8px; border-radius: 999px; }
-  .lab-card > p { color: var(--muted); margin-top: 10px; }
-
-  .topo { margin-top: 24px; width: 100%; height: auto; display: block; }
-  .topo text { font-family: var(--mono); }
-  .topo .flow { stroke-dasharray: 4 6; animation: flow 1.4s linear infinite; }
-  .topo .attack { stroke-dasharray: 6 6; animation: flow 0.9s linear infinite; }
-  @keyframes flow { to { stroke-dashoffset: -20; } }
-  .topo .node rect { transition: stroke 0.3s; }
-  .topo .node:hover rect { stroke: var(--cyan); }
-
-  .spec { margin-top: 24px; display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
-  .spec div { display: grid; grid-template-columns: 130px 1fr; gap: 14px; padding: 12px 16px; background: var(--panel-solid); font-size: 14px; }
-  .spec dt { font-family: var(--mono); font-size: 12px; color: var(--dim); padding-top: 1px; }
-  .spec dd { color: var(--text); }
-
-  .lab-right { display: grid; gap: 28px; }
-
-  .hunt-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  .eid { font-family: var(--mono); font-size: 12px; color: var(--amber); border: 1px solid rgba(255, 181, 71, 0.35); background: rgba(255, 181, 71, 0.08); padding: 3px 10px; border-radius: 999px; }
-
-  .chain { margin-top: 22px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .chain div { padding: 14px; border-radius: 10px; border: 1px solid var(--line); background: rgba(5, 7, 15, 0.45); }
-  .chain .t { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
-  .chain .red .t { color: var(--red); }
-  .chain .blue .t { color: var(--cyan); }
-  .chain .purple .t { color: var(--purple); }
-  .chain p { font-size: 13px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
-
-  .roadmap { margin-top: 20px; list-style: none; display: grid; gap: 12px; }
-  .roadmap li { display: flex; align-items: center; gap: 14px; font-size: 15px; }
-  .roadmap .st { flex: none; font-family: var(--mono); font-size: 11px; width: 74px; text-align: center; padding: 3px 0; border-radius: 6px; }
-  .roadmap .done { color: var(--green); background: rgba(61, 220, 151, 0.08); border: 1px solid rgba(61, 220, 151, 0.3); }
-  .roadmap .next { color: var(--cyan); background: rgba(0, 200, 255, 0.08); border: 1px solid rgba(0, 200, 255, 0.3); }
-  .roadmap .next-dot { animation: blink 1.4s steps(1) infinite; }
-  .roadmap .muted { color: var(--muted); }
-
-  .repo {
-    margin-top: 22px; display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 12px;
-    border: 1px solid var(--line-strong); background: rgba(5, 7, 15, 0.5);
-    transition: border-color 0.3s, transform 0.3s var(--ease);
-  }
-  .repo:hover { border-color: var(--cyan); transform: translateY(-2px); }
-  .repo svg { width: 26px; height: 26px; flex: none; }
-  .repo .rn { font-family: var(--mono); font-size: 14px; color: var(--text); word-break: break-all; }
-  .repo .rn span { color: var(--muted); }
-  .repo .rd { font-size: 13px; color: var(--muted); }
-  .repo .arr { margin-left: auto; color: var(--cyan); flex: none; }
-
-  /* ---------- Skills ---------- */
-  .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-  .skill-col { padding: 30px; overflow: hidden; }
-  .skill-col::after {
-    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; border-radius: var(--radius) var(--radius) 0 0;
-  }
-  .skill-col.off::after { background: linear-gradient(90deg, var(--red), transparent); }
-  .skill-col.def::after { background: linear-gradient(90deg, var(--cyan), transparent); }
-  .skill-col.dev::after { background: linear-gradient(90deg, var(--purple), transparent); }
-  .skill-col .label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; }
-  .skill-col.off .label { color: var(--red); }
-  .skill-col.def .label { color: var(--cyan); }
-  .skill-col.dev .label { color: var(--purple); }
-  .skill-col h3 { font-size: 22px; margin-top: 6px; letter-spacing: -0.01em; }
-  .skill-col > p { color: var(--muted); font-size: 14px; margin-top: 8px; }
-
-  .tags { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 10px; list-style: none; }
-  .tag {
-    font-family: var(--mono); font-size: 13px; padding: 8px 13px; border-radius: 8px;
-    border: 1px solid var(--line-strong); background: rgba(5, 7, 15, 0.55); color: var(--text);
-    display: inline-flex; align-items: center; gap: 8px;
-    opacity: 0; transform: translateY(10px) scale(0.96);
-    transition: opacity 0.5s var(--ease), transform 0.5s var(--ease), border-color 0.25s, background 0.25s;
-    transition-delay: var(--td, 0s);
-  }
-  .in .tag { opacity: 1; transform: none; }
-  .tag::before { content: ""; width: 6px; height: 6px; border-radius: 2px; flex: none; }
-  .off .tag::before { background: var(--red); }
-  .def .tag::before { background: var(--cyan); }
-  .dev .tag::before { background: var(--purple); }
-  .off .tag:hover { border-color: var(--red); background: rgba(255, 92, 122, 0.08); }
-  .def .tag:hover { border-color: var(--cyan); background: rgba(0, 200, 255, 0.08); }
-  .dev .tag:hover { border-color: var(--purple); background: rgba(123, 92, 255, 0.1); }
-
-  .purple-note {
-    margin-top: 24px; padding: 22px 26px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
-    font-family: var(--mono); font-size: 14px; color: var(--muted);
-  }
-  .purple-note .eq { color: var(--text); }
-  .purple-note .eq .r { color: var(--red); }
-  .purple-note .eq .b { color: var(--cyan); }
-  .purple-note .eq .p { color: var(--purple); font-weight: 700; }
-
-  /* ---------- Education ---------- */
-  .edu { padding: 36px; display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: start; }
-  .edu-logo {
-    width: 72px; height: 72px; border-radius: 16px; display: grid; place-items: center;
-    background: linear-gradient(135deg, rgba(0, 200, 255, 0.15), rgba(123, 92, 255, 0.18));
-    border: 1px solid rgba(123, 92, 255, 0.35); color: var(--text);
-  }
-  .edu-logo svg { width: 34px; height: 34px; }
-  .edu h3 { font-size: 24px; letter-spacing: -0.02em; }
-  .edu .inst { color: var(--cyan); font-family: var(--mono); font-size: 14px; margin-top: 4px; }
-  .edu-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
-  .edu-meta span { font-family: var(--mono); font-size: 12px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--muted); }
-  .edu-meta span b { color: var(--text); font-weight: 500; }
-
-  .timeline { margin-top: 30px; position: relative; padding-left: 26px; }
-  .timeline::before { content: ""; position: absolute; left: 6px; top: 6px; bottom: 6px; width: 1px; background: linear-gradient(var(--cyan), var(--purple), transparent); }
-  .tl { position: relative; padding-bottom: 22px; }
-  .tl:last-child { padding-bottom: 0; }
-  .tl::before { content: ""; position: absolute; left: -25px; top: 7px; width: 11px; height: 11px; border-radius: 50%; background: var(--bg); border: 2px solid var(--cyan); }
-  .tl.now::before { border-color: var(--purple); background: var(--purple); box-shadow: 0 0 0 4px rgba(123, 92, 255, 0.2); }
-  .tl.goal::before { border-style: dashed; border-color: var(--dim); }
-  .tl .when { font-family: var(--mono); font-size: 12px; color: var(--dim); }
-  .tl .what { font-weight: 600; }
-  .tl .det { font-size: 14px; color: var(--muted); }
-
-  /* ---------- Contact ---------- */
-  .contact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-  .contact-card { padding: 30px; display: flex; flex-direction: column; gap: 18px; min-height: 220px; }
-  .contact-card .ico { width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; border: 1px solid var(--line-strong); background: rgba(5, 7, 15, 0.6); color: var(--text); transition: color 0.3s, border-color 0.3s; }
-  .contact-card:hover .ico { color: var(--cyan); border-color: var(--cyan); }
-  .contact-card .ico svg { width: 22px; height: 22px; }
-  .contact-card h3 { font-size: 20px; }
-  .contact-card .handle { font-family: var(--mono); font-size: 13px; color: var(--muted); word-break: break-all; }
-  .contact-card .go { margin-top: auto; font-family: var(--mono); font-size: 13px; color: var(--cyan); display: inline-flex; align-items: center; gap: 8px; }
-  .contact-card .go svg { width: 14px; height: 14px; transition: transform 0.3s var(--ease); }
-  .contact-card:hover .go svg { transform: translate(3px, -3px); }
-  .contact-card.pending .go { color: var(--dim); }
-
-  .contact-term { margin-top: 28px; }
-
-  /* ---------- Footer ---------- */
-  footer { border-top: 1px solid var(--line); padding: 34px 0; }
-  .foot { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; color: var(--dim); }
-  .foot a:hover { color: var(--cyan); }
-
-  /* ---------- Workstation ---------- */
-  .desk {
-    padding: 18px; overflow: hidden;
-    background:
-      linear-gradient(rgba(0, 200, 255, 0.04) 1px, transparent 1px) 0 0 / 28px 28px,
-      linear-gradient(90deg, rgba(0, 200, 255, 0.04) 1px, transparent 1px) 0 0 / 28px 28px,
-      #020308;
-  }
-  .desk-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-family: var(--mono); font-size: 12px; color: var(--dim); margin-bottom: 16px; flex-wrap: wrap; }
-  .desk-bar b { color: var(--muted); font-weight: 500; }
-  .desk-grid { display: grid; grid-template-columns: 750fr 370fr; gap: 16px; align-items: start; }
-  .desk-col { display: grid; gap: 16px; }
-  .shot { position: relative; margin: 0; }
-  .shot img { display: block; width: 100%; height: auto; border-radius: 12px; }
-  .shot.half { width: 49.3%; }
-  .shot figcaption {
-    position: absolute; left: 10px; bottom: 10px;
-    font-family: var(--mono); font-size: 11px; color: var(--text);
-    padding: 3px 8px; border-radius: 6px; background: rgba(5, 7, 15, 0.8); border: 1px solid var(--line-strong);
-    opacity: 0; transform: translateY(4px); transition: opacity 0.3s, transform 0.3s var(--ease);
-  }
-  .shot:hover figcaption { opacity: 1; transform: none; }
-  .desk-note { margin-top: 14px; font-family: var(--mono); font-size: 11px; color: var(--dim); }
-
-  .ws-grid { margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
-  .ws-list { margin-top: 18px; list-style: none; display: grid; gap: 10px; }
-  .ws-list li { display: flex; gap: 12px; font-size: 15px; color: var(--muted); }
-  .ws-list li::before { content: "▸"; color: var(--cyan); flex: none; }
-  .ws-list strong { color: var(--text); font-weight: 600; }
-
-  /* ---------- Responsive ---------- */
-  @media (max-width: 980px) {
-    .hero-grid, .about-grid, .lab-grid, .ws-grid { grid-template-columns: 1fr; }
-    .skills-grid, .contact-grid { grid-template-columns: 1fr 1fr; }
-    .skill-col.dev { grid-column: 1 / -1; }
-    .contact-card:last-child { grid-column: 1 / -1; }
-    .hero-term-wrap { max-width: 560px; }
-  }
-
-  @media (max-width: 760px) {
-    :root { --nav-h: 62px; }
-    .desk { padding: 12px; }
-    .desk-grid { grid-template-columns: 1fr; gap: 12px; }
-    .desk-col { gap: 12px; }
-    .shot.half { width: 100%; }
-    .shot figcaption { opacity: 1; transform: none; }
-    .desk-bar span:last-child { display: none; }
-    section { padding: 84px 0; }
-    .sec-head { margin-bottom: 40px; }
-    .menu-btn { display: block; }
-    .nav-links {
-      position: fixed; top: var(--nav-h); left: 0; right: 0;
-      flex-direction: column; gap: 0; padding: 12px 16px 20px;
-      background: rgba(5, 7, 15, 0.96); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--line);
-      transform: translateY(-8px); opacity: 0; visibility: hidden;
-      transition: transform 0.35s var(--ease), opacity 0.35s, visibility 0.35s;
-    }
-    .nav-links.open { transform: none; opacity: 1; visibility: visible; }
-    .nav-links a { display: block; padding: 14px 8px; font-size: 15px; border-bottom: 1px solid var(--line); border-radius: 0; }
-    .nav-links li:last-child a { border-bottom: 0; }
-    .nav-links a::after { display: none; }
-    nav.menu-open { background: rgba(5, 7, 15, 0.96); border-bottom-color: var(--line); }
-
-    .skills-grid, .contact-grid { grid-template-columns: 1fr; }
-    .about-text, .lab-card, .skill-col, .edu, .contact-card { padding: 24px; }
-    .chain { grid-template-columns: 1fr; }
-    .spec div { grid-template-columns: 1fr; gap: 2px; }
-    .edu { grid-template-columns: 1fr; }
-    .scroll-hint { display: none; }
-    .term-body { font-size: 12px; padding: 16px; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    *, *::before, *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
-    .cursor, .logo .caret { animation: none !important; }
-  }
-</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Abu Bakar Siddique",
+  "alternateName": "ruxchipher",
+  "url": "https://ruxchipher.com/",
+  "jobTitle": "Cyber Security Student",
+  "address": { "@type": "PostalAddress", "addressLocality": "Sydney", "addressCountry": "AU" },
+  "alumniOf": { "@type": "CollegeOrUniversity", "name": "CQUniversity Australia" },
+  "knowsAbout": ["Active Directory", "Kerberoasting", "Threat detection", "Purple teaming", "Kali Linux", "Python"],
+  "sameAs": [
+    "https://github.com/Siddique-12300983",
+    "https://www.linkedin.com/in/siddiqueabu/"
+  ]
+}
+</script>
 </head>
-<body class="booting">
+<body>
 
-<!-- Boot sequence -->
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- Boot sequence (shown once per browser session, never without JS) -->
 <div id="boot" aria-hidden="true">
   <div class="boot-box">
     <div id="bootLines"></div>
     <div class="boot-bar"><i id="bootBar"></i></div>
-    <div class="boot-skip">press any key to skip</div>
+    <div class="boot-skip">tap or press any key to skip</div>
   </div>
 </div>
 
-<!-- Background -->
-<div class="glow g1"></div>
-<div class="glow g2"></div>
-<div class="grid-overlay"></div>
-<canvas id="net"></canvas>
-<div class="scanlines"></div>
+<!-- Decorative background -->
+<div class="bg" aria-hidden="true">
+  <div class="glow g1"></div>
+  <div class="glow g2"></div>
+  <div class="grid-overlay"></div>
+  <canvas id="net"></canvas>
+  <div class="scanlines"></div>
+</div>
 
-<!-- Nav -->
-<nav id="nav">
-  <div class="nav-inner">
-    <a href="#hero" class="logo" aria-label="ruxchipher home"><span class="tilde">~/</span><span class="name">ruxchipher</span><span class="caret"></span></a>
-    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks"><span></span><span></span><span></span></button>
+<!-- ================= NAV ================= -->
+<header class="nav" id="nav">
+  <nav class="nav-inner" aria-label="Primary">
+    <a href="#hero" class="logo" aria-label="ruxchipher, back to top"><span class="tilde">~/</span><span class="name">ruxchipher</span><span class="caret" aria-hidden="true"></span></a>
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks"><span></span><span></span><span></span></button>
     <ul class="nav-links" id="navLinks">
       <li><a href="#about"><span class="num">01.</span>about</a></li>
       <li><a href="#lab"><span class="num">02.</span>lab</a></li>
       <li><a href="#workstation"><span class="num">03.</span>workstation</a></li>
-      <li><a href="#skills"><span class="num">04.</span>skills</a></li>
-      <li><a href="#education"><span class="num">05.</span>education</a></li>
-      <li><a href="#contact"><span class="num">06.</span>contact</a></li>
+      <li><a href="#detections"><span class="num">04.</span>detections</a></li>
+      <li><a href="#skills"><span class="num">05.</span>skills</a></li>
+      <li><a href="#journey"><span class="num">06.</span>journey</a></li>
+      <li><a href="#contact"><span class="num">07.</span>contact</a></li>
     </ul>
-  </div>
-</nav>
+  </nav>
+</header>
+<div class="nav-scrim" id="navScrim" aria-hidden="true"></div>
 
-<main>
-  <!-- ============ HERO ============ -->
-  <section id="hero">
+<main id="main" tabindex="-1">
+
+  <!-- ================= HERO ================= -->
+  <section id="hero" class="hero" aria-labelledby="hero-title">
     <div class="wrap hero-grid">
-      <div>
-        <div class="status-pill reveal" style="--d:.05s"><span class="dot"></span>Seeking purple team internship · 2027</div>
-        <p class="hero-hello reveal" style="--d:.12s">&gt; hello, world. I'm</p>
-        <h1 class="hero-name reveal" style="--d:.2s">Abu Bakar <span class="last">Siddique</span></h1>
-        <div class="codename reveal" style="--d:.3s">
-          <span>codename</span><b class="glitch">ruxchipher</b><span>// Sydney, AU</span>
-        </div>
-        <div class="typing reveal" style="--d:.4s" aria-live="polite">
-          <span class="prompt">$</span> <span class="role" id="role"></span><span class="cursor"></span>
-        </div>
-        <p class="hero-lede reveal" style="--d:.5s">
-          Second-year <strong>Cyber Security</strong> student at CQUniversity who learns by building.
-          I break things in my own lab, then learn how to catch them, and that's why I'm working toward <strong>purple teaming</strong>.
+      <div class="hero-copy">
+        <div class="status-pill reveal"><span class="dot" aria-hidden="true"></span>Seeking purple team internship · 2027</div>
+        <p class="hero-hello reveal d1">&gt; hello, world. I'm</p>
+        <!-- Decrypt effect is used in only 4 places: this name (once per visit), the codename on hover, the role line below, and the alert log. -->
+        <h1 id="hero-title" class="hero-name reveal d2" aria-label="Abu Bakar Siddique">
+          <span class="first" data-decrypt aria-hidden="true">Abu Bakar</span>
+          <span class="last" data-decrypt aria-hidden="true">Siddique</span>
+        </h1>
+        <p class="codename reveal d3">
+          <span>codename</span><b class="code-chip" id="codename" tabindex="0" aria-label="ruxchipher">ruxchipher</b><span>// Sydney, AU</span>
         </p>
-        <div class="cta reveal" style="--d:.6s">
+        <p class="typing reveal d4">
+          <span class="prompt" aria-hidden="true">$</span>
+          <span class="role" id="role" aria-hidden="true">Cyber Security Student</span><span class="cursor" aria-hidden="true"></span>
+          <span class="sr-only">Cyber security student, purple team learner, Active Directory lab builder, aspiring threat hunter.</span>
+        </p>
+        <p class="hero-lede reveal d5">
+          I break things in my own <strong>Active Directory lab</strong>, then learn how to catch them.
+          Every attack I run ends with a detection I can show, and that's why I'm working toward <strong>purple teaming</strong>.
+        </p>
+        <div class="cta reveal d6">
           <a href="#lab" class="btn btn-primary">explore the lab
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <!-- Upload your CV to assets/resume.pdf. Until then this button hides itself. -->
+          <a href="assets/resume.pdf" class="btn btn-ghost" data-requires="assets/resume.pdf" download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+            resume.pdf
           </a>
           <a href="#contact" class="btn btn-ghost">get in touch</a>
         </div>
       </div>
 
-      <div class="hero-term-wrap reveal" style="--d:.45s">
-        <div class="panel term">
-          <div class="term-bar"><i></i><i></i><i></i><span>siddique@ruxchipher: ~</span></div>
-          <div class="term-body" id="heroTerm">
-            <span class="ln"><span class="p">❯</span> <span class="w">whoami</span></span>
-            <span class="ln"><span class="c">siddique</span> <span class="cm">aka ruxchipher</span></span>
-            <span class="ln"> </span>
-            <span class="ln"><span class="p">❯</span> <span class="w">cat</span> profile.yml</span>
-            <span class="ln"><span class="y">study</span>:  B.IT · Cyber Security</span>
-            <span class="ln"><span class="y">minor</span>:  Application Development</span>
-            <span class="ln"><span class="y">year</span>:   2nd · CQUniversity</span>
-            <span class="ln"><span class="y">base</span>:   Sydney, Australia</span>
-            <span class="ln"><span class="y">target</span>: <span class="c">purple_team_internship</span>(2027)</span>
-            <span class="ln"> </span>
-            <span class="ln"><span class="p">❯</span> <span class="w">systemctl</span> status homelab</span>
-            <span class="ln"><span class="g">●</span> homelab.service <span class="cm">- AD lab</span></span>
-            <span class="ln">  Active: <span class="g">active (running)</span></span>
-            <span class="ln">  Next:   <span class="c">wazuh + sigma</span><span class="cursor" style="height:1em"></span></span>
+      <div class="hero-term-wrap reveal d4">
+        <!-- Live alert log: fed by the red "attack" packets in the background network (simulated) -->
+        <div class="panel term alert-log" id="alertLog">
+          <div class="term-bar">
+            <i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i>
+            <span>detections.log</span>
+            <span class="alert-count" id="alertCount">3 alerts</span>
+          </div>
+          <div class="term-body alert-body" id="alertBody" aria-label="Simulated detection alerts">
+            <span class="ln alert-line"><span class="cm">09:41:07</span> <span class="r">[!]</span> EID <span class="c">4769</span> TGS-REQ · RC4 (0x17) → <span class="g">DC01</span></span>
+            <span class="ln alert-line"><span class="cm">09:41:12</span> <span class="r">[!]</span> EID <span class="c">4625</span> failed logon ×5 → <span class="g">DC01</span></span>
+            <span class="ln alert-line"><span class="cm">09:41:20</span> <span class="r">[!]</span> EID <span class="c">4688</span> suspicious process → <span class="g">WIN11</span></span>
+          </div>
+          <div class="alert-foot">
+            <span><span class="dot-red" aria-hidden="true"></span>simulated from the network behind this page</span>
+            <button type="button" class="sim-btn js-only" id="simBtn">simulate attack</button>
           </div>
         </div>
       </div>
     </div>
-    <a href="#about" class="scroll-hint reveal" style="--d:.9s" aria-label="Scroll to about"><span class="mouse"></span>SCROLL</a>
+    <a href="#about" class="scroll-hint reveal d8" aria-label="Scroll to about"><span class="mouse" aria-hidden="true"></span>SCROLL</a>
   </section>
 
-  <!-- ============ ABOUT ============ -->
-  <section id="about">
+  <!-- ================= ABOUT ================= -->
+  <section id="about" class="section" aria-labelledby="about-title">
     <div class="wrap">
       <div class="sec-head reveal">
-        <div class="sec-tag">01 · about</div>
-        <h2 class="sec-title">Build the lab first.<br><span class="hl">Learn the theory second.</span></h2>
+        <p class="sec-tag">01 · about</p>
+        <h2 id="about-title" class="sec-title">Build the lab first.<br><span class="hl">Learn the theory second.</span></h2>
       </div>
       <div class="about-grid">
-        <div class="panel about-text glow-card reveal">
-          <p>I'm <strong>Abu Bakar Siddique</strong> (most people call me <strong>Siddique</strong>), a second-year <strong>Bachelor of IT</strong> student at <strong>CQUniversity</strong>, majoring in <strong>Cyber Security</strong> with a minor in <strong>Application Development</strong>. I'm based in Sydney.</p>
+        <div class="panel card about-text reveal">
+          <p>I'm <strong>Abu Bakar Siddique</strong>, though most people call me <strong>Siddique</strong>. I'm a second-year <strong>Bachelor of IT</strong> student at <strong>CQUniversity</strong> in Sydney, majoring in <strong>Cyber Security</strong> with a minor in <strong>Application Development</strong>.</p>
           <p>I learn by doing. Before I read the chapter on Kerberos, I'd rather have a domain controller running, an attacker box ready, and a log to dig through. Running the attack, watching it land in the logs, and then writing the detection is the loop that makes things click for me.</p>
-          <p>My goal is a <strong>purple team internship in 2027</strong>, where offensive and defensive security work together. Outside of study I work at <strong>Avis Budget Group</strong> as a Rental Operations Agent, which keeps me sharp on communication, time pressure, and solving problems for real people.</p>
-          <div class="quote"><span>//</span> attack it → log it → detect it → harden it → repeat</div>
+          <p>My goal is a <strong>purple team internship in 2027</strong>, where offensive and defensive security work together.</p>
         </div>
-        <div class="facts">
-          <div class="panel fact glow-card reveal" style="--d:.05s">
-            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg></div>
-            <div><div class="k">Studying</div><div class="v">B.IT · Cyber Security</div><div class="s">CQUniversity · 2nd year · App Dev minor</div></div>
-          </div>
-          <div class="panel fact glow-card reveal" style="--d:.1s">
-            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></div>
-            <div><div class="k">Target</div><div class="v">Purple Team Internship</div><div class="s">2027 · offence and defence together</div></div>
-          </div>
-          <div class="panel fact glow-card reveal" style="--d:.15s">
-            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>
-            <div><div class="k">Working</div><div class="v">Avis Budget Group</div><div class="s">Rental Operations Agent</div></div>
-          </div>
-          <div class="panel fact glow-card reveal" style="--d:.2s">
-            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
-            <div><div class="k">Based in</div><div class="v">Sydney, Australia</div><div class="s">AEST / AEDT</div></div>
-          </div>
+        <div class="panel card loop reveal d2">
+          <h3 class="card-title">My learning loop</h3>
+          <ol class="loop-list">
+            <li><span class="n red">01</span><div><b>Attack it</b><p>Run the technique from Kali against my own domain.</p></div></li>
+            <li><span class="n">02</span><div><b>Log it</b><p>Make sure the right telemetry exists to see it.</p></div></li>
+            <li><span class="n">03</span><div><b>Detect it</b><p>Write a query that catches it, then tune out the noise.</p></div></li>
+            <li><span class="n purple">04</span><div><b>Harden it</b><p>Fix the weakness so the attack stops working.</p></div></li>
+            <li><span class="n green">05</span><div><b>Repeat</b><p>Pick the next technique on the roadmap.</p></div></li>
+          </ol>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ============ LAB ============ -->
-  <section id="lab">
+  <!-- ================= LAB ================= -->
+  <section id="lab" class="section" aria-labelledby="lab-title">
     <div class="wrap">
       <div class="sec-head reveal">
-        <div class="sec-tag">02 · home lab</div>
-        <h2 class="sec-title">Harbourline Freight<span class="hl">.</span><br><span class="hl">A fake company I attack and defend.</span></h2>
+        <p class="sec-tag">02 · home lab</p>
+        <h2 id="lab-title" class="sec-title">Harbourline Freight<span class="hl">.</span><br><span class="hl">A fake company I attack and defend.</span></h2>
         <p class="sec-sub">A full Active Directory environment virtualised on my own machine, built to practise real attacks and the detections that catch them.</p>
       </div>
 
       <div class="lab-grid">
-        <div class="panel lab-card glow-card reveal">
-          <h3>Network topology <span class="badge">● online</span></h3>
-          <p>Every VM runs under KVM on an Arch Linux host. The attacker box sits on its own NAT lab network, and nothing outside can reach in.</p>
+        <div class="panel card lab-card reveal">
+          <h3 class="card-title">Network topology <span class="badge">● online</span></h3>
+          <p class="card-text">Every VM runs under KVM on an Arch Linux host. The attacker box sits on its own NAT network: it reaches the internet, but nothing outside can reach in.</p>
 
-          <svg class="topo" viewBox="0 0 520 380" role="img" aria-label="Lab topology: an Arch Linux KVM host runs a NAT lab network with a Windows Server 2025 domain controller, a Windows 11 client and a Kali Linux attacker.">
-            <defs>
-              <linearGradient id="gH" x1="0" x2="1"><stop offset="0" stop-color="#00c8ff"/><stop offset="1" stop-color="#7b5cff"/></linearGradient>
-            </defs>
-            <!-- host boundary -->
-            <rect x="8" y="8" width="504" height="364" rx="16" fill="none" stroke="rgba(120,140,200,.25)" stroke-dasharray="5 5"/>
-            <text x="26" y="34" fill="#5a6480" font-size="11">HOST · Arch Linux + KVM/QEMU</text>
-
-            <!-- NAT lab net box -->
-            <rect x="24" y="48" width="472" height="308" rx="12" fill="rgba(123,92,255,.04)" stroke="rgba(123,92,255,.3)"/>
-            <text x="40" y="70" fill="#7b5cff" font-size="11">LAB NETWORK · NAT, no inbound</text>
-
-            <!-- switch -->
-            <g class="node">
-              <rect x="200" y="164" width="120" height="40" rx="8" fill="#0a0e1c" stroke="url(#gH)"/>
-              <text x="260" y="189" text-anchor="middle" fill="#e6ebf5" font-size="12">virtual switch</text>
-            </g>
-
-            <!-- links -->
+          <!-- Wide topology (tablet / desktop) -->
+          <svg class="topo topo-wide" viewBox="0 0 520 380" role="img" aria-label="Lab topology: an Arch Linux KVM host runs a NAT lab network. A virtual switch connects a Windows Server 2025 domain controller, a domain-joined Windows 11 workstation and a Kali Linux attacker.">
+            <defs><linearGradient id="gH" x1="0" x2="1"><stop offset="0" stop-color="#00c8ff"/><stop offset="1" stop-color="#8f75ff"/></linearGradient></defs>
+            <rect x="8" y="8" width="504" height="364" rx="16" fill="none" stroke="rgba(120,140,200,.3)" stroke-dasharray="5 5"/>
+            <text x="26" y="34" fill="#7f8aa8" font-size="12">HOST · Arch Linux + KVM/QEMU</text>
+            <rect x="24" y="48" width="472" height="308" rx="12" fill="rgba(143,117,255,.05)" stroke="rgba(143,117,255,.35)"/>
+            <text x="40" y="70" fill="#8f75ff" font-size="12">LAB NETWORK · NAT, no inbound</text>
             <path class="flow" d="M260 164 V128" stroke="#00c8ff" stroke-width="1.5" fill="none"/>
             <path class="flow" d="M200 184 H140 V258" stroke="#00c8ff" stroke-width="1.5" fill="none"/>
             <path class="attack" d="M320 184 H380 V258" stroke="#ff5c7a" stroke-width="1.5" fill="none"/>
+            <g class="node"><rect x="200" y="164" width="120" height="40" rx="8" fill="#0a0e1c" stroke="url(#gH)"/><text x="260" y="189" text-anchor="middle" fill="#e6ebf5" font-size="12">virtual switch</text></g>
+            <g class="node"><rect x="166" y="82" width="188" height="46" rx="8" fill="#0d1224" stroke="rgba(0,200,255,.5)"/><circle cx="186" cy="105" r="4" fill="#3ddc97"/><text x="200" y="101" fill="#e6ebf5" font-size="13" font-weight="700">Domain Controller</text><text x="200" y="118" fill="#9aa3bc" font-size="11">Windows Server 2025</text></g>
+            <g class="node"><rect x="44" y="258" width="192" height="62" rx="8" fill="#0d1224" stroke="rgba(0,200,255,.5)"/><circle cx="64" cy="280" r="4" fill="#3ddc97"/><text x="78" y="284" fill="#e6ebf5" font-size="13" font-weight="700">Workstation</text><text x="78" y="302" fill="#9aa3bc" font-size="11">Windows 11 · domain-joined</text></g>
+            <g class="node"><rect x="284" y="258" width="192" height="62" rx="8" fill="#0d1224" stroke="rgba(255,92,122,.55)"/><circle cx="304" cy="280" r="4" fill="#ff5c7a"/><text x="318" y="284" fill="#e6ebf5" font-size="13" font-weight="700">Attacker</text><text x="318" y="302" fill="#9aa3bc" font-size="11">Kali Linux</text></g>
+            <text x="390" y="232" fill="#ff5c7a" font-size="11">TGS-REQ</text>
+            <text x="62" y="232" fill="#00c8ff" font-size="11">auth / GPO</text>
+          </svg>
 
-            <!-- DC -->
-            <g class="node">
-              <rect x="170" y="84" width="180" height="44" rx="8" fill="#0d1224" stroke="rgba(0,200,255,.5)"/>
-              <circle cx="190" cy="106" r="4" fill="#3ddc97"/>
-              <text x="204" y="102" fill="#e6ebf5" font-size="12" font-weight="700">Domain Controller</text>
-              <text x="204" y="118" fill="#8c96b0" font-size="10">Windows Server 2025</text>
-            </g>
-
-            <!-- Client -->
-            <g class="node">
-              <rect x="48" y="258" width="184" height="62" rx="8" fill="#0d1224" stroke="rgba(0,200,255,.5)"/>
-              <circle cx="68" cy="280" r="4" fill="#3ddc97"/>
-              <text x="82" y="284" fill="#e6ebf5" font-size="12" font-weight="700">Workstation</text>
-              <text x="82" y="300" fill="#8c96b0" font-size="10">Windows 11 · domain-joined</text>
-            </g>
-
-            <!-- Kali -->
-            <g class="node">
-              <rect x="288" y="258" width="184" height="62" rx="8" fill="#0d1224" stroke="rgba(255,92,122,.55)"/>
-              <circle cx="308" cy="280" r="4" fill="#ff5c7a"/>
-              <text x="322" y="284" fill="#e6ebf5" font-size="12" font-weight="700">Attacker</text>
-              <text x="322" y="300" fill="#8c96b0" font-size="10">Kali Linux</text>
-            </g>
-
-            <text x="392" y="232" fill="#ff5c7a" font-size="10">TGS-REQ</text>
-            <text x="64" y="232" fill="#00c8ff" font-size="10">auth / GPO</text>
+          <!-- Tall topology (phones) -->
+          <svg class="topo topo-tall" viewBox="0 0 340 470" role="img" aria-label="Lab topology: an Arch Linux KVM host runs a NAT lab network. A virtual switch connects a Windows Server 2025 domain controller, a domain-joined Windows 11 workstation and a Kali Linux attacker.">
+            <defs><linearGradient id="gT" x1="0" x2="1"><stop offset="0" stop-color="#00c8ff"/><stop offset="1" stop-color="#8f75ff"/></linearGradient></defs>
+            <rect x="6" y="6" width="328" height="458" rx="16" fill="none" stroke="rgba(120,140,200,.3)" stroke-dasharray="5 5"/>
+            <text x="20" y="30" fill="#7f8aa8" font-size="12">HOST · Arch Linux + KVM/QEMU</text>
+            <rect x="18" y="44" width="304" height="406" rx="12" fill="rgba(143,117,255,.05)" stroke="rgba(143,117,255,.35)"/>
+            <text x="32" y="66" fill="#8f75ff" font-size="12">LAB NETWORK · NAT, no inbound</text>
+            <path class="flow" d="M170 144 V214" stroke="#00c8ff" stroke-width="1.5" fill="none"/>
+            <path class="flow" d="M150 254 V300 H97 V340" stroke="#00c8ff" stroke-width="1.5" fill="none"/>
+            <path class="attack" d="M190 254 V300 H243 V340" stroke="#ff5c7a" stroke-width="1.5" fill="none"/>
+            <g class="node"><rect x="56" y="88" width="228" height="56" rx="8" fill="#0d1224" stroke="rgba(0,200,255,.5)"/><circle cx="76" cy="114" r="4" fill="#3ddc97"/><text x="90" y="111" fill="#e6ebf5" font-size="14" font-weight="700">Domain Controller</text><text x="90" y="130" fill="#9aa3bc" font-size="12">Windows Server 2025</text></g>
+            <g class="node"><rect x="110" y="214" width="120" height="40" rx="8" fill="#0a0e1c" stroke="url(#gT)"/><text x="170" y="239" text-anchor="middle" fill="#e6ebf5" font-size="13">virtual switch</text></g>
+            <g class="node"><rect x="30" y="340" width="134" height="84" rx="8" fill="#0d1224" stroke="rgba(0,200,255,.5)"/><circle cx="46" cy="362" r="4" fill="#3ddc97"/><text x="58" y="367" fill="#e6ebf5" font-size="14" font-weight="700">Workstation</text><text x="44" y="391" fill="#9aa3bc" font-size="12">Windows 11</text><text x="44" y="409" fill="#9aa3bc" font-size="12">domain-joined</text></g>
+            <g class="node"><rect x="176" y="340" width="134" height="84" rx="8" fill="#0d1224" stroke="rgba(255,92,122,.55)"/><circle cx="192" cy="362" r="4" fill="#ff5c7a"/><text x="204" y="367" fill="#e6ebf5" font-size="14" font-weight="700">Attacker</text><text x="190" y="391" fill="#9aa3bc" font-size="12">Kali Linux</text><text x="190" y="409" fill="#9aa3bc" font-size="12">attack box</text></g>
+            <text x="34" y="292" fill="#00c8ff" font-size="12">auth / GPO</text>
+            <text x="252" y="292" fill="#ff5c7a" font-size="12">TGS-REQ</text>
           </svg>
 
           <dl class="spec">
@@ -726,184 +247,236 @@
             <div><dt>client</dt><dd>Windows 11, domain-joined</dd></div>
             <div><dt>attacker</dt><dd>Kali Linux on the lab network</dd></div>
             <div><dt>org</dt><dd>Harbourline Freight · 12 users · OUs · GPOs</dd></div>
-            <div><dt>logging</dt><dd>Advanced audit GPO · Sysmon on client</dd></div>
+            <div><dt>logging</dt><dd>Audit policy GPO · Sysmon on client</dd></div>
           </dl>
         </div>
 
-        <div class="lab-right">
-          <div class="panel lab-card glow-card reveal" style="--d:.08s">
-            <div class="hunt-head">
-              <h3>Kerberoasting: attack &amp; detect</h3>
-              <span class="eid">Event ID 4769</span>
-            </div>
-            <p>A service account with an SPN is set up on purpose, ready to be Kerberoasted from Kali and hunted as Event 4769 in the domain controller's Security log.</p>
+        <div class="panel card lab-card reveal d2">
+          <h3 class="card-title">Build roadmap</h3>
+          <ul class="roadmap">
+            <li><span class="st done">done</span><span>KVM host on Arch Linux, NAT lab network</span></li>
+            <li><span class="st done">done</span><span>Windows Server 2025 DC + Windows 11 client</span></li>
+            <li><span class="st done">done</span><span>Harbourline Freight: 12 users, OUs, GPOs</span></li>
+            <li><span class="st done">done</span><span>Audit policy GPO: 4688 command lines, logons, group changes</span></li>
+            <li><span class="st done">done</span><span>Sysmon on Windows 11 for endpoint telemetry</span></li>
+            <li><span class="st done">done</span><span>Kerberoasted svc_sql, caught it as 4769 (AES, not RC4)</span></li>
+            <li><span class="st next">next</span><span>Wazuh SIEM for central alerting</span></li>
+          </ul>
 
-            <div class="chain">
-              <div class="red"><div class="t">Red</div><p>Register an SPN, request a TGS for the service account from Kali.</p></div>
-              <div class="blue"><div class="t">Blue</div><p>Catch the request as Event 4769 on the DC.</p></div>
-              <div class="purple"><div class="t">Purple</div><p>Tune the detection, then harden the account.</p></div>
-            </div>
-
-            <div class="panel term" style="margin-top:22px">
-              <div class="term-bar"><i></i><i></i><i></i><span>DC · PowerShell</span></div>
-              <div class="term-body">
-<span class="ln"><span class="cm"># hunt: service ticket requests using RC4</span></span>
-<span class="ln"><span class="p">PS&gt;</span> <span class="w">Get-WinEvent</span> -FilterHashtable @{</span>
-<span class="ln">      LogName=<span class="g">'Security'</span>; Id=<span class="y">4769</span> } |</span>
-<span class="ln">    <span class="w">Where-Object</span> { $_.Message <span class="c">-match</span> <span class="g">'0x17'</span> }</span>
-<span class="ln"> </span>
-<span class="ln"><span class="cm"># 0x17 = RC4-HMAC, a classic Kerberoasting tell</span></span>
-              </div>
-            </div>
-          </div>
-
-          <div class="panel lab-card glow-card reveal" style="--d:.14s">
-            <h3>Roadmap</h3>
-            <ul class="roadmap">
-              <li><span class="st done">done</span>KVM host on Arch Linux, NAT lab network</li>
-              <li><span class="st done">done</span>Windows Server 2025 DC + Windows 11 client</li>
-              <li><span class="st done">done</span>Harbourline Freight: 12 users, OUs, GPOs</li>
-              <li><span class="st done">done</span>Audit policy GPO: 4688 with command lines, logons, group changes</li>
-              <li><span class="st done">done</span>Sysmon on Windows 11 for deeper endpoint telemetry</li>
-              <li><span class="st done">done</span>Kerberoast from Kali, caught it as 4769 (AES, not the classic RC4)</li>
-              <li><span class="st next"><span class="next-dot">▸</span> next</span><span>Wazuh SIEM for central alerting</span></li>
-            </ul>
-
-            <a class="repo" href="https://github.com/Siddique-12300983/purple-team-journey" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.4-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg>
-              <div>
-                <div class="rn"><span>Siddique-12300983 /</span> purple-team-journey</div>
-                <div class="rd">Lab notes, build steps and detections</div>
-              </div>
-              <span class="arr">↗</span>
-            </a>
-          </div>
+          <a class="repo" href="https://github.com/Siddique-12300983/purple-team-journey" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
+            <span class="repo-text">
+              <span class="rn"><span>Siddique-12300983 /</span> purple-team-journey</span>
+              <span class="rd">Lab notes, build steps and detections</span>
+            </span>
+            <span class="arr" aria-hidden="true">↗</span>
+          </a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ============ WORKSTATION ============ -->
-  <section id="workstation">
+  <!-- ================= WORKSTATION ================= -->
+  <section id="workstation" class="section" aria-labelledby="ws-title">
     <div class="wrap">
       <div class="sec-head reveal">
-        <div class="sec-tag">03 · workstation</div>
-        <h2 class="sec-title">A desktop that<br><span class="hl">watches its own back.</span></h2>
+        <p class="sec-tag">03 · workstation</p>
+        <h2 id="ws-title" class="sec-title">A desktop that<br><span class="hl">watches its own back.</span></h2>
         <p class="sec-sub">My Arch Linux laptop, customised into a security-aware workstation: custom-coded widgets that monitor the system and my lab, and a small service that alerts me to suspicious activity.</p>
       </div>
 
       <div class="panel desk reveal">
-        <div class="desk-bar"><span><b>ruxchipher@arch</b> · GNOME on Wayland · Tokyo Night</span><span>click for full size</span></div>
-        <a href="assets/workstation/desktop.webp" target="_blank" rel="noopener">
-          <figure class="shot"><img src="assets/workstation/desktop.webp" alt="Full desktop: on the left a greeting with a security tip, the Arch logo, a mission tracker counting down to 2027 and a Sydney weather and calendar panel; on the right a system monitor HUD with gauges, network graph, storage, power, top processes and a sentinel status strip, and a lab widget showing the DC01, WIN11 and KALI virtual machines" width="1920" height="1080" loading="lazy"><figcaption>left.lua · hud.lua · lab.lua</figcaption></figure>
-        </a>
-        <p class="desk-note">// my actual widget layout, 1920×1080 · Wi-Fi name and IP blurred</p>
+        <div class="desk-bar"><span><b>ruxchipher@arch</b> · GNOME on Wayland · Tokyo Night</span><span class="desk-tip">hover a widget for its source file</span></div>
+        <div class="desk-grid">
+          <div class="desk-col">
+            <figure class="shot"><img src="assets/workstation/greeting.png" alt="Greeting widget: Burning the midnight oil, Siddique, with a cyber security tip about service account passwords" width="750" height="207" loading="lazy" decoding="async"><figcaption>left.lua</figcaption></figure>
+            <div class="desk-pair">
+              <figure class="shot"><img src="assets/workstation/mission.png" alt="Mission tracker counting down the days to 2027 with lab objectives and a commit heatmap" width="362" height="400" loading="lazy" decoding="async"><figcaption>left.lua · mission</figcaption></figure>
+              <figure class="shot"><img src="assets/workstation/weather.png" alt="Sydney weather and calendar widget" width="364" height="400" loading="lazy" decoding="async"><figcaption>left.lua · weather</figcaption></figure>
+            </div>
+            <!-- media + lab share one row under mission/weather, so both columns end at the same height -->
+            <div class="desk-pair desk-pair-even">
+              <figure class="shot"><img src="assets/workstation/now-playing.png" alt="Now playing widget with album art, track title and progress bar" width="370" height="166" loading="lazy" decoding="async"><figcaption>media.lua</figcaption></figure>
+              <figure class="shot"><img src="assets/workstation/lab-widget.png" alt="Lab widget showing the DC01, WIN11 and KALI virtual machines with live status and CPU usage" width="370" height="166" loading="lazy" decoding="async"><figcaption>lab.lua</figcaption></figure>
+            </div>
+          </div>
+          <div class="desk-col">
+            <figure class="shot shot-hud"><img src="assets/workstation/hud.png" alt="System monitor HUD with clock, CPU, RAM and GPU gauges, network graph, storage, battery and top processes" width="370" height="810" loading="lazy" decoding="async"><figcaption>hud.lua</figcaption></figure>
+          </div>
+        </div>
+        <p class="desk-note">// lab and now-playing widgets shown with preview data · network name and IP redacted</p>
       </div>
 
       <div class="ws-grid">
-        <div class="panel lab-card glow-card reveal">
-          <div class="hunt-head">
-            <h3>sentinel: host alerting</h3>
-            <span class="eid">blue team</span>
-          </div>
-          <p>A Python service I wrote that runs in the background and sends a desktop alert when something looks wrong.</p>
+        <div class="panel card lab-card reveal">
+          <h3 class="card-title">sentinel: host alerting <span class="chip chip-cyan">blue team</span></h3>
+          <p class="card-text">A Python service I wrote that runs in the background and sends a desktop alert when something looks wrong.</p>
           <ul class="ws-list">
-            <li><span>Follows the <strong>systemd journal</strong> for failed passwords: sudo, admin prompts, the login screen and SSH.</span></li>
-            <li><span>Polls <strong>listening TCP ports</strong> and flags any new one, marked critical if it's reachable from the network.</span></li>
-            <li><span>De-duplicates repeats and writes every alert to a log for review.</span></li>
+            <li>Follows the <strong>systemd journal</strong> for failed passwords: sudo, admin prompts, the login screen and SSH.</li>
+            <li>Polls <strong>listening TCP ports</strong> and flags any new one, marked critical if it's reachable from the network.</li>
+            <li>De-duplicates repeats and writes every alert to a log for review.</li>
           </ul>
-          <div class="panel term" style="margin-top:22px">
-            <div class="term-bar"><i></i><i></i><i></i><span>events.log · my own test run</span></div>
+          <div class="panel term term-mini">
+            <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>events.log · my own test run</span></div>
             <div class="term-body">
-<span class="ln"><span class="r">[!]</span> <span class="w">Failed password</span>  <span class="cm">|</span>  source: <span class="c">sudo</span></span>
-<span class="ln"><span class="r">[!]</span> <span class="w">New listening port</span> <span class="y">(network-exposed)</span></span>
-<span class="ln">    0.0.0.0:48765  <span class="cm">·</span>  process: <span class="c">python</span></span>
+              <span class="ln"><span class="r">[!]</span> <span class="w">Failed password</span>  <span class="cm">|</span>  source: <span class="c">sudo</span></span>
+              <span class="ln"><span class="r">[!]</span> <span class="w">New listening port</span> <span class="y">(network-exposed)</span></span>
+              <span class="ln">    0.0.0.0:48765  <span class="cm">·</span>  process: <span class="c">python</span></span>
             </div>
           </div>
         </div>
 
-        <div class="panel lab-card glow-card reveal" style="--d:.08s">
-          <div class="hunt-head">
-            <h3>ruxchipher HUD</h3>
-            <span class="eid" style="color:var(--purple);border-color:rgba(123,92,255,.4);background:rgba(123,92,255,.1)">Lua · cairo</span>
-          </div>
-          <p>Four desktop widgets drawn from scratch in Lua with the cairo graphics library, running on Conky.</p>
+        <div class="panel card lab-card reveal d2">
+          <h3 class="card-title">ruxchipher HUD <span class="chip chip-purple">Lua · cairo</span></h3>
+          <p class="card-text">Four desktop widgets drawn from scratch in Lua with the cairo graphics library, running on Conky.</p>
           <ul class="ws-list">
-            <li><span><strong>Battery-aware GPU polling:</strong> checks the GPU's power state first, so the monitor never wakes the RTX 4060.</span></li>
-            <li><span><strong>Live lab status:</strong> reads <code>virsh domstats</code> to show which VMs are running and how busy they are.</span></li>
-            <li><span><strong>Mission tracker:</strong> my 2027 goal, lab objectives and a commit streak pulled from my lab repo's git history.</span></li>
-            <li><span><strong>Sentinel strip:</strong> pulses red after an alert; one click opens a plain-language report of what happened.</span></li>
-            <li><span><strong>Battery-friendly animation:</strong> the weather icon only animates when clicked, or for a few seconds every 10 minutes.</span></li>
+            <li><strong>Battery-aware GPU polling:</strong> checks the GPU's power state first, so the monitor never wakes the RTX 4060.</li>
+            <li><strong>Live lab status:</strong> reads <code>virsh domstats</code> to show which VMs are running and how busy they are.</li>
+            <li><strong>Mission tracker:</strong> my 2027 goal, lab objectives and a commit streak pulled from my lab repo's git history.</li>
+            <li><strong>Non-blocking data:</strong> weather and album art are fetched in the background, and the media widget hides itself when nothing is playing.</li>
           </ul>
-          <a class="repo" href="https://github.com/Siddique-12300983/ruxchipher-dotfiles" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.4-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg>
-            <div>
-              <div class="rn"><span>Siddique-12300983 /</span> ruxchipher-dotfiles</div>
-              <div class="rd">Everything below, plus a one-command installer and guide</div>
-            </div>
-            <span class="arr">↗</span>
+          <a class="repo" href="https://github.com/Siddique-12300983/ruxchipher-dotfiles" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
+            <span class="repo-text">
+              <span class="rn"><span>Siddique-12300983 /</span> ruxchipher-dotfiles</span>
+              <span class="rd">All widget, sentinel and terminal configs</span>
+            </span>
+            <span class="arr" aria-hidden="true">↗</span>
           </a>
         </div>
-      </div>
-
-      <div class="panel skill-col dev reveal" style="margin-top:28px">
-        <div class="label">// also in the repo</div>
-        <ul class="tags">
-          <li class="tag">Plymouth boot splash</li>
-          <li class="tag">branded login screen</li>
-          <li class="tag">browser start page</li>
-          <li class="tag">lab-up / lab-down</li>
-          <li class="tag">focus mode + study streak</li>
-          <li class="tag">lid-hibernate fix</li>
-          <li class="tag">install.sh for new machines</li>
-        </ul>
       </div>
     </div>
   </section>
 
-  <!-- ============ SKILLS ============ -->
-  <section id="skills">
+  <!-- ================= DETECTIONS ================= -->
+  <section id="detections" class="section" aria-labelledby="det-title">
     <div class="wrap">
       <div class="sec-head reveal">
-        <div class="sec-tag">04 · skills</div>
-        <h2 class="sec-title">Both sides <span class="hl">of the wire.</span></h2>
+        <p class="sec-tag">04 · detections</p>
+        <h2 id="det-title" class="sec-title">Attack. Detect. <span class="hl">Document.</span></h2>
+        <p class="sec-sub">Each technique I run in the lab becomes a write-up with the detection that catches it.</p>
+      </div>
+
+      <article class="panel card case reveal" aria-labelledby="case-kerb">
+        <div class="case-head">
+          <h3 id="case-kerb" class="card-title">Kerberoasting: attack &amp; detect</h3>
+          <ul class="chips" aria-label="Tags">
+            <li class="chip chip-purple">MITRE T1558.003</li>
+            <li class="chip chip-amber">Event ID 4769</li>
+            <li class="chip chip-green">documented</li>
+          </ul>
+        </div>
+        <p class="card-text">A service account with an SPN is set up on purpose. I request its ticket from Kali, then hunt for that request in the domain controller's Security log. On Server 2025 the DC only issues AES tickets, which changes how the detection has to work.</p>
+
+        <ol class="chain">
+          <li class="red"><span class="t">Red</span><p>Register an SPN on a service account, then request its TGS from Kali.</p></li>
+          <li class="blue"><span class="t">Blue</span><p>Catch the request as Event 4769 on the DC. On this AES-only domain the ticket is 0x12, not the classic RC4 0x17.</p></li>
+          <li class="purple"><span class="t">Purple</span><p>Tune out machine accounts and krbtgt, then harden the account: long random password or gMSA, AES only.</p></li>
+        </ol>
+
+        <div class="code-wrap" data-tabs>
+          <div class="code-bar">
+            <div class="tabs" role="tablist" aria-label="Detection format">
+              <button type="button" role="tab" id="tab-ps" aria-controls="panel-ps" aria-selected="true">PowerShell</button>
+              <button type="button" role="tab" id="tab-sigma" aria-controls="panel-sigma" aria-selected="false" tabindex="-1">Sigma</button>
+            </div>
+            <button type="button" class="copy-btn" data-copy>copy</button>
+          </div>
+          <div class="code-panel" role="tabpanel" id="panel-ps" aria-labelledby="tab-ps">
+<pre class="code" tabindex="0"><code><span class="cm"># Hunt: RC4 service tickets requested for user accounts</span>
+<span class="v">$xpath</span> = <span class="s">"*[System[EventID=4769] and EventData[Data[@Name='TicketEncryptionType']='0x17']]"</span>
+
+<span class="k">Get-WinEvent</span> -LogName Security -FilterXPath <span class="v">$xpath</span> |
+  <span class="k">Where-Object</span> { <span class="v">$_</span>.Properties[<span class="n">2</span>].Value <span class="o">-notmatch</span> <span class="s">'\$$|^krbtgt$'</span> } |
+  <span class="k">Select-Object</span> TimeCreated,
+    @{n=<span class="s">'Account'</span>; e={<span class="v">$_</span>.Properties[<span class="n">0</span>].Value}},
+    @{n=<span class="s">'Service'</span>; e={<span class="v">$_</span>.Properties[<span class="n">2</span>].Value}},
+    @{n=<span class="s">'Client'</span>;  e={<span class="v">$_</span>.Properties[<span class="n">6</span>].Value}}
+
+<span class="cm"># 0x17 = RC4-HMAC, the classic Kerberoasting tell</span></code></pre>
+          </div>
+          <div class="code-panel" role="tabpanel" id="panel-sigma" aria-labelledby="tab-sigma">
+<pre class="code" tabindex="0"><code><span class="k">title</span>: Kerberoasting - RC4 service ticket requested
+<span class="k">status</span>: experimental
+<span class="k">description</span>: TGS requested with RC4-HMAC for a user (non-machine) service account
+<span class="k">tags</span>:
+  - attack.credential-access
+  - attack.t1558.003
+<span class="k">logsource</span>:
+  <span class="k">product</span>: windows
+  <span class="k">service</span>: security
+<span class="k">detection</span>:
+  <span class="k">selection</span>:
+    <span class="k">EventID</span>: <span class="n">4769</span>
+    <span class="k">TicketEncryptionType</span>: <span class="s">'0x17'</span>
+    <span class="k">Status</span>: <span class="s">'0x0'</span>
+  <span class="k">filter_machine</span>:
+    <span class="k">ServiceName|endswith</span>: <span class="s">'$'</span>
+  <span class="k">filter_krbtgt</span>:
+    <span class="k">ServiceName</span>: <span class="s">'krbtgt'</span>
+  <span class="k">condition</span>: selection and not 1 of filter_*
+<span class="k">falsepositives</span>:
+  - Legacy apps that still require RC4
+<span class="k">level</span>: medium</code></pre>
+          </div>
+        </div>
+
+        <p class="case-note"><b>The catch:</b> the rule below hunts RC4 (0x17), the classic tell. But my Server 2025 DC refuses RC4, so my attack came back as AES (0x12) and this rule never fires. The real detection here is behavioural: baseline which accounts normally request service tickets and alert on the unusual ones.</p>
+        <a class="text-link" href="https://github.com/Siddique-12300983/purple-team-journey" target="_blank" rel="noopener noreferrer">read the lab notes on GitHub ↗</a>
+      </article>
+
+      <div class="next-grid">
+        <article class="panel card next-card lift reveal d1">
+          <span class="chip chip-cyan">next up</span>
+          <h3 class="card-title">Endpoint telemetry with Sysmon</h3>
+          <p class="card-text">Add Sysmon to the DC and workstation for process, network and registry events the Security log can't see.</p>
+        </article>
+        <article class="panel card next-card lift reveal d2">
+          <span class="chip chip-cyan">next up</span>
+          <h3 class="card-title">Central alerting with Wazuh</h3>
+          <p class="card-text">Ship lab logs into Wazuh so detections like this one fire as real alerts instead of manual hunts.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SKILLS ================= -->
+  <section id="skills" class="section" aria-labelledby="skills-title">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-tag">05 · skills</p>
+        <h2 id="skills-title" class="sec-title">Both sides <span class="hl">of the wire.</span></h2>
         <p class="sec-sub">Tools and concepts I've used hands-on in my lab and coursework.</p>
       </div>
 
       <div class="skills-grid">
-        <div class="panel skill-col off glow-card reveal">
-          <div class="label">// offensive</div>
+        <div class="panel card skill-col off reveal">
+          <p class="label">// offensive</p>
           <h3>Red</h3>
-          <p>Thinking like the attacker so the defence has something real to catch.</p>
+          <p class="card-text">Thinking like the attacker so the defence has something real to catch.</p>
           <ul class="tags">
             <li class="tag">Kali Linux</li>
             <li class="tag">Kerberoasting</li>
             <li class="tag">SPN enumeration</li>
-            <li class="tag">Rubeus · impacket</li>
-            <li class="tag">hashcat</li>
             <li class="tag">Networking</li>
           </ul>
         </div>
-        <div class="panel skill-col def glow-card reveal" style="--d:.08s">
-          <div class="label">// defensive</div>
+        <div class="panel card skill-col def reveal d1">
+          <p class="label">// defensive</p>
           <h3>Blue</h3>
-          <p>Building, hardening and watching the environment.</p>
+          <p class="card-text">Building, hardening and watching the environment.</p>
           <ul class="tags">
             <li class="tag">Active Directory</li>
             <li class="tag">GPO</li>
-            <li class="tag">Windows audit policy</li>
-            <li class="tag">Sysmon</li>
-            <li class="tag">Event IDs 4688 · 4624 · 4625 · 4728</li>
-            <li class="tag">NTP &amp; Kerberos time sync</li>
+            <li class="tag">Kerberoasting detection</li>
+            <li class="tag">Event ID 4769</li>
             <li class="tag">Wireshark</li>
-            <li class="tag">journald log monitoring</li>
-            <li class="tag">systemd</li>
           </ul>
         </div>
-        <div class="panel skill-col dev glow-card reveal" style="--d:.16s">
-          <div class="label">// dev &amp; infra</div>
+        <div class="panel card skill-col dev reveal d2">
+          <p class="label">// dev &amp; infra</p>
           <h3>Build</h3>
-          <p>The code and platforms everything else runs on.</p>
+          <p class="card-text">The code and platforms everything else runs on.</p>
           <ul class="tags">
             <li class="tag">Python</li>
             <li class="tag">Java</li>
@@ -911,9 +484,6 @@
             <li class="tag">Git</li>
             <li class="tag">Arch Linux</li>
             <li class="tag">KVM</li>
-            <li class="tag">libvirt</li>
-            <li class="tag">Lua</li>
-            <li class="tag">Bash</li>
           </ul>
         </div>
       </div>
@@ -925,297 +495,137 @@
     </div>
   </section>
 
-  <!-- ============ EDUCATION ============ -->
-  <section id="education">
+  <!-- ================= JOURNEY ================= -->
+  <section id="journey" class="section" aria-labelledby="journey-title">
     <div class="wrap">
       <div class="sec-head reveal">
-        <div class="sec-tag">05 · education</div>
-        <h2 class="sec-title">Where the <span class="hl">theory</span> comes in.</h2>
+        <p class="sec-tag">06 · journey</p>
+        <h2 id="journey-title" class="sec-title">Study, work and <span class="hl">where it's heading.</span></h2>
       </div>
 
-      <div class="panel edu glow-card reveal">
-        <div class="edu-logo">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/><path d="M22 10v6"/></svg>
-        </div>
-        <div>
+      <div class="journey-grid">
+        <article class="panel card j-card reveal">
+          <div class="j-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/><path d="M22 10v6"/></svg></div>
+          <p class="j-kind">education</p>
           <h3>Bachelor of Information Technology</h3>
-          <div class="inst">CQUniversity Australia</div>
-          <div class="edu-meta">
-            <span>major · <b>Cyber Security</b></span>
-            <span>minor · <b>Application Development</b></span>
-            <span>status · <b>2nd year</b></span>
-          </div>
-
-          <div class="timeline">
-            <div class="tl">
-              <div class="when">HE Term 1 · 2025</div>
-              <div class="what">Started the Bachelor of IT</div>
-              <div class="det">Cyber Security major with an Application Development minor.</div>
-            </div>
-            <div class="tl now">
-              <div class="when">Now</div>
-              <div class="what">Second year</div>
-              <div class="det">Studying alongside the Harbourline Freight AD lab.</div>
-            </div>
-            <div class="tl goal">
-              <div class="when">2027</div>
-              <div class="what">Purple team internship</div>
-              <div class="det">The next milestone I'm working toward.</div>
-            </div>
-          </div>
-        </div>
+          <p class="j-org">CQUniversity Australia</p>
+          <ul class="meta">
+            <li>major · <b>Cyber Security</b></li>
+            <li>minor · <b>Application Development</b></li>
+            <li>status · <b>2nd year</b></li>
+          </ul>
+        </article>
+        <article class="panel card j-card reveal d1">
+          <div class="j-ico purple" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>
+          <p class="j-kind">work · alongside study</p>
+          <h3>Rental Operations Agent</h3>
+          <p class="j-org">Avis Budget Group</p>
+          <p class="card-text">Keeps me sharp on communication, working under time pressure, and solving problems for real people.</p>
+        </article>
       </div>
+
+      <div class="panel timeline-panel reveal">
+        <ol class="timeline">
+          <li class="tl">
+            <p class="when">HE Term 1 · 2025</p>
+            <p class="what">Started the Bachelor of IT</p>
+            <p class="det">Cyber Security major with an Application Development minor.</p>
+          </li>
+          <li class="tl now">
+            <p class="when">Now</p>
+            <p class="what">Second year + Harbourline Freight lab</p>
+            <p class="det">Studying, working at Avis, and building out the AD lab: Sysmon and Wazuh are next.</p>
+          </li>
+          <li class="tl goal">
+            <p class="when">2027</p>
+            <p class="what">Purple team internship</p>
+            <p class="det">The next milestone I'm working toward.</p>
+          </li>
+        </ol>
+      </div>
+
+      <!--
+        CERTIFICATIONS: uncomment when you have something to show (completed or in progress).
+        <div class="panel card certs reveal">
+          <h3 class="card-title">Certifications</h3>
+          <ul class="cert-list">
+            <li><b>Cert name</b><span class="chip chip-green">earned · 2026</span></li>
+            <li><b>Cert name</b><span class="chip chip-cyan">in progress</span></li>
+          </ul>
+        </div>
+      -->
     </div>
   </section>
 
-  <!-- ============ CONTACT ============ -->
-  <section id="contact">
+  <!-- ================= CONTACT ================= -->
+  <section id="contact" class="section" aria-labelledby="contact-title">
     <div class="wrap">
       <div class="sec-head reveal">
-        <div class="sec-tag">06 · contact</div>
-        <h2 class="sec-title">Open a <span class="hl">connection.</span></h2>
-        <p class="sec-sub">Looking for a purple team intern for 2027, or just want to talk about labs and detections? Reach out.</p>
+        <p class="sec-tag">07 · contact</p>
+        <h2 id="contact-title" class="sec-title">Open a <span class="hl">connection.</span></h2>
+        <p class="sec-sub">Looking for a purple team intern for 2027, or want to talk about labs and detections? Reach out. I usually reply within a day.</p>
       </div>
 
       <div class="contact-grid">
-        <a class="panel contact-card glow-card reveal" href="https://github.com/Siddique-12300983" target="_blank" rel="noopener">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.4-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></div>
-          <div><h3>GitHub</h3><div class="handle">github.com/Siddique-12300983</div></div>
-          <span class="go">view repos <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+        <a class="panel card contact-card lift reveal" href="https://github.com/Siddique-12300983" target="_blank" rel="noopener noreferrer">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-github"/></svg></span>
+          <span><span class="c-title">GitHub</span><span class="handle">github.com/Siddique-12300983</span></span>
+          <span class="go">view repos <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
         </a>
-        <a class="panel contact-card glow-card reveal" style="--d:.08s" href="https://www.linkedin.com/in/siddiqueabu/" target="_blank" rel="noopener">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></svg></div>
-          <div><h3>LinkedIn</h3><div class="handle">linkedin.com/in/siddiqueabu</div></div>
-          <span class="go">connect <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+        <a class="panel card contact-card lift reveal d1" href="https://www.linkedin.com/in/siddiqueabu/" target="_blank" rel="noopener noreferrer">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></svg></span>
+          <span><span class="c-title">LinkedIn</span><span class="handle">linkedin.com/in/siddiqueabu</span></span>
+          <span class="go">connect <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
         </a>
-        <a class="panel contact-card glow-card reveal" style="--d:.16s" href="mailto:abubakar.cq28@gmail.com">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg></div>
-          <div><h3>Email</h3><div class="handle">abubakar.cq28@gmail.com</div></div>
-          <span class="go">send a message <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+        <!-- Email is assembled by JS so simple scraper bots don't harvest it -->
+        <a class="panel card contact-card lift reveal d2" href="#contact" data-email-user="abubakar.cq28" data-email-domain="gmail.com">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg></span>
+          <span><span class="c-title">Email</span><span class="handle" data-email-text>abubakar.cq28 [at] gmail [dot] com</span></span>
+          <span class="go">send a message <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
         </a>
       </div>
 
-      <div class="panel term contact-term reveal">
-        <div class="term-bar"><i></i><i></i><i></i><span>ruxchipher · ~</span></div>
-        <div class="term-body">
-<span class="ln"><span class="p">❯</span> <span class="w">./connect.sh</span> --with siddique</span>
-<span class="ln"><span class="g">[+]</span> handshake ok · open to: <span class="c">internships</span>, <span class="c">lab collabs</span>, <span class="c">mentoring</span></span>
-<span class="ln"><span class="g">[+]</span> response time: usually within a day<span class="cursor" style="height:1em"></span></span>
+      <!-- Interactive terminal (moved here from the hero) -->
+      <div class="contact-term reveal">
+        <div class="panel term" id="heroTerm">
+          <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>siddique@ruxchipher: ~</span></div>
+          <div class="term-body term-out" id="termOut" role="log" aria-label="Terminal output" aria-live="polite" tabindex="0">
+            <span class="ln"><span class="p">❯</span> <span class="w">./connect.sh</span> --with siddique</span>
+            <span class="ln"><span class="g">[+]</span> handshake ok · open to: <span class="c">internships</span>, <span class="c">lab collabs</span>, <span class="c">mentoring</span></span>
+            <span class="ln js-only"><span class="cm"># this terminal works. type</span> <span class="y">help</span></span>
+          </div>
+          <form class="term-input" id="termForm" autocomplete="off">
+            <label for="termIn" class="sr-only">Type a terminal command, for example help</label>
+            <span class="p" aria-hidden="true">❯</span>
+            <input id="termIn" name="cmd" type="text" maxlength="80" spellcheck="false" autocapitalize="off" autocorrect="off" enterkeyhint="send" placeholder="type 'help'">
+          </form>
         </div>
+        <p class="term-hint">try <kbd>help</kbd> <kbd>whoami</kbd> <kbd>lab</kbd> <kbd>detect</kbd></p>
+      </div>
+
+      <div class="panel resume-strip reveal" data-requires="assets/resume.pdf">
+        <span><b>Prefer a one-pager?</b> Grab my résumé.</span>
+        <a class="btn btn-primary btn-sm" href="assets/resume.pdf" download>download résumé</a>
       </div>
     </div>
   </section>
 </main>
 
-<footer>
+<footer class="footer">
   <div class="wrap foot">
-    <span>© <span id="year"></span> Abu Bakar Siddique · ruxchipher</span>
-    <span>hand-built in HTML, CSS &amp; JS · <a href="#hero">back to top ↑</a></span>
+    <span>© <span id="year">2026</span> Abu Bakar Siddique · ruxchipher</span>
+    <span class="foot-links">
+      <a href="https://github.com/Siddique-12300983" target="_blank" rel="noopener noreferrer">github</a>
+      <a href="https://www.linkedin.com/in/siddiqueabu/" target="_blank" rel="noopener noreferrer">linkedin</a>
+      <a href="#hero">back to top ↑</a>
+    </span>
   </div>
 </footer>
 
-<script>
-(() => {
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  document.getElementById("year").textContent = new Date().getFullYear();
+<!-- Shared icons -->
+<svg width="0" height="0" class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.4-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></symbol>
+</svg>
 
-  /* ---------- Boot sequence ---------- */
-  const bootEl = document.getElementById("boot");
-  const bootLines = document.getElementById("bootLines");
-  const bootBar = document.getElementById("bootBar");
-  const lines = [
-    '<span class="ok">[  OK  ]</span> Mounting /home/ruxchipher',
-    '<span class="ok">[  OK  ]</span> Starting kvm-lab.target',
-    '<span class="ok">[  OK  ]</span> Reached harbourline-freight.domain',
-    '<span class="ok">[  OK  ]</span> Started detect-4769.service',
-    '<span class="acc">[ INFO ]</span> loading portfolio…'
-  ];
-  let booted = false;
-
-  function finishBoot() {
-    if (booted) return;
-    booted = true;
-    bootEl.classList.add("done");
-    document.body.classList.remove("booting");
-    document.body.classList.add("loaded");
-    revealHero();
-    window.removeEventListener("keydown", finishBoot);
-    bootEl.removeEventListener("click", finishBoot);
-  }
-
-  if (reduceMotion) {
-    bootEl.style.display = "none";
-    finishBoot();
-  } else {
-    window.addEventListener("keydown", finishBoot);
-    bootEl.addEventListener("click", finishBoot);
-    lines.forEach((html, i) => {
-      const div = document.createElement("div");
-      div.className = "boot-line";
-      div.innerHTML = html;
-      bootLines.appendChild(div);
-      setTimeout(() => {
-        div.classList.add("show");
-        bootBar.style.width = ((i + 1) / (lines.length + 1)) * 100 + "%";
-      }, 160 + i * 190);
-    });
-    const grantAt = 160 + lines.length * 190 + 120;
-    setTimeout(() => {
-      if (booted) return;
-      const g = document.createElement("div");
-      g.className = "boot-line granted";
-      g.innerHTML = "<span>ACCESS GRANTED</span>";
-      bootLines.appendChild(g);
-      requestAnimationFrame(() => g.classList.add("show"));
-      bootBar.style.width = "100%";
-    }, grantAt);
-    setTimeout(finishBoot, grantAt + 650);
-  }
-
-  /* ---------- Hero reveal + terminal ---------- */
-  function revealHero() {
-    document.querySelectorAll("#hero .reveal").forEach(el => el.classList.add("in"));
-    const tl = document.querySelectorAll("#heroTerm .ln");
-    tl.forEach((ln, i) => setTimeout(() => ln.classList.add("show"), reduceMotion ? 0 : 700 + i * 85));
-    setTimeout(startTyping, reduceMotion ? 0 : 600);
-  }
-
-  /* ---------- Typing effect ---------- */
-  const roles = ["Cyber Security Student", "Purple Team Learner", "Active Directory Builder", "Aspiring Threat Hunter"];
-  const roleEl = document.getElementById("role");
-  function startTyping() {
-    if (reduceMotion) { roleEl.textContent = roles[0]; return; }
-    let r = 0, c = 0, deleting = false;
-    (function tick() {
-      const word = roles[r];
-      if (!deleting) {
-        roleEl.textContent = word.slice(0, ++c);
-        if (c === word.length) { deleting = true; return setTimeout(tick, 1800); }
-        setTimeout(tick, 55 + Math.random() * 45);
-      } else {
-        roleEl.textContent = word.slice(0, --c);
-        if (c === 0) { deleting = false; r = (r + 1) % roles.length; return setTimeout(tick, 350); }
-        setTimeout(tick, 28);
-      }
-    })();
-  }
-
-  /* ---------- Scroll reveals ---------- */
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
-    });
-  }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
-  document.querySelectorAll("section:not(#hero) .reveal").forEach(el => io.observe(el));
-
-  // Stagger skill tags
-  document.querySelectorAll(".tags").forEach(list => {
-    list.querySelectorAll(".tag").forEach((t, i) => t.style.setProperty("--td", 0.25 + i * 0.06 + "s"));
-  });
-
-  /* ---------- Nav: scrolled state, active link, mobile menu ---------- */
-  const nav = document.getElementById("nav");
-  const menuBtn = document.getElementById("menuBtn");
-  const navLinks = document.getElementById("navLinks");
-  const links = [...navLinks.querySelectorAll("a")];
-
-  const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 20);
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
-
-  function setMenu(open) {
-    menuBtn.setAttribute("aria-expanded", open);
-    navLinks.classList.toggle("open", open);
-    nav.classList.toggle("menu-open", open);
-  }
-  menuBtn.addEventListener("click", () => setMenu(menuBtn.getAttribute("aria-expanded") !== "true"));
-  links.forEach(a => a.addEventListener("click", () => setMenu(false)));
-  window.addEventListener("keydown", e => { if (e.key === "Escape") setMenu(false); });
-
-  const sectionIO = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        links.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
-      }
-    });
-  }, { rootMargin: "-45% 0px -50% 0px" });
-  document.querySelectorAll("main section").forEach(s => sectionIO.observe(s));
-
-  /* ---------- Card spotlight follows pointer ---------- */
-  document.querySelectorAll(".glow-card").forEach(card => {
-    card.addEventListener("pointermove", e => {
-      const r = card.getBoundingClientRect();
-      card.style.setProperty("--mx", e.clientX - r.left + "px");
-      card.style.setProperty("--my", e.clientY - r.top + "px");
-    });
-  });
-
-  /* ---------- Background particle network ---------- */
-  const canvas = document.getElementById("net");
-  const ctx = canvas.getContext("2d");
-  let w, h, dpr, pts = [], raf = null;
-  const mouse = { x: -9999, y: -9999 };
-  const LINK = 130;
-
-  function resize() {
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    w = window.innerWidth; h = window.innerHeight;
-    canvas.width = w * dpr; canvas.height = h * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const count = Math.min(90, Math.floor((w * h) / 16000));
-    pts = Array.from({ length: count }, () => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      vx: (Math.random() - 0.5) * 0.25,
-      vy: (Math.random() - 0.5) * 0.25,
-      r: Math.random() * 1.4 + 0.6,
-      c: Math.random() < 0.7 ? "0,200,255" : "123,92,255"
-    }));
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, w, h);
-    for (let i = 0; i < pts.length; i++) {
-      const p = pts[i];
-      p.x += p.vx; p.y += p.vy;
-      if (p.x < 0 || p.x > w) p.vx *= -1;
-      if (p.y < 0 || p.y > h) p.vy *= -1;
-
-      const mdx = p.x - mouse.x, mdy = p.y - mouse.y;
-      const md = Math.hypot(mdx, mdy);
-      if (md < 120 && md > 0) { p.x += (mdx / md) * 0.6; p.y += (mdy / md) * 0.6; }
-
-      for (let j = i + 1; j < pts.length; j++) {
-        const q = pts[j];
-        const dx = p.x - q.x, dy = p.y - q.y;
-        const d = dx * dx + dy * dy;
-        if (d < LINK * LINK) {
-          const a = (1 - Math.sqrt(d) / LINK) * 0.22;
-          ctx.strokeStyle = `rgba(${p.c},${a})`;
-          ctx.lineWidth = 0.8;
-          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
-        }
-      }
-      ctx.fillStyle = `rgba(${p.c},0.75)`;
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
-    }
-    raf = requestAnimationFrame(draw);
-  }
-
-  resize();
-  if (reduceMotion) {
-    draw(); cancelAnimationFrame(raf);
-  } else {
-    draw();
-    let rt;
-    window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(resize, 150); });
-    window.addEventListener("pointermove", e => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) { cancelAnimationFrame(raf); raf = null; }
-      else if (!raf) draw();
-    });
-  }
-})();
-</script>
 </body>
 </html>
