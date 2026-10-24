@@ -91,11 +91,11 @@
     <a href="#hero" class="logo" aria-label="ruxchipher, back to top"><span class="tilde">~/</span><span class="name">ruxchipher</span><span class="caret" aria-hidden="true"></span></a>
     <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks"><span></span><span></span><span></span></button>
     <ul class="nav-links" id="navLinks">
-      <li><a href="#about"><span class="num">01.</span>about</a></li>
-      <li><a href="#lab"><span class="num">02.</span>lab</a></li>
+      <li><a href="#lab"><span class="num">01.</span>lab</a></li>
+      <li><a href="#detections"><span class="num">02.</span>detections</a></li>
       <li><a href="#workstation"><span class="num">03.</span>workstation</a></li>
-      <li><a href="#detections"><span class="num">04.</span>detections</a></li>
-      <li><a href="#skills"><span class="num">05.</span>skills</a></li>
+      <li><a href="#skills"><span class="num">04.</span>skills</a></li>
+      <li><a href="#about"><span class="num">05.</span>about</a></li>
       <li><a href="#journey"><span class="num">06.</span>journey</a></li>
       <li><a href="#contact"><span class="num">07.</span>contact</a></li>
     </ul>
@@ -129,7 +129,11 @@
           Every attack I run ends with a detection I can show, and that's why I'm working toward <strong>purple teaming</strong>.
         </p>
         <div class="cta reveal d6">
-          <a href="#lab" class="btn btn-primary">explore the lab
+          <a href="https://github.com/Siddique-12300983" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
+            view my GitHub
+          </a>
+          <a href="#lab" class="btn btn-ghost">explore the lab
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </a>
           <!-- Upload your CV to assets/resume.pdf. Until then this button hides itself. -->
@@ -161,32 +165,29 @@
         </div>
       </div>
     </div>
-    <a href="#about" class="scroll-hint reveal d8" aria-label="Scroll to about"><span class="mouse" aria-hidden="true"></span>SCROLL</a>
+    <a href="#lab" class="scroll-hint reveal d8" aria-label="Scroll to the lab"><span class="mouse" aria-hidden="true"></span>SCROLL</a>
   </section>
 
-  <!-- ================= ABOUT ================= -->
-  <section id="about" class="section" aria-labelledby="about-title">
+  <!-- ================= REPOS ================= -->
+  <section id="repos" class="repos-section" aria-label="GitHub repositories">
     <div class="wrap">
-      <div class="sec-head reveal">
-        <p class="sec-tag">01 · about</p>
-        <h2 id="about-title" class="sec-title">Build the lab first.<br><span class="hl">Learn the theory second.</span></h2>
-      </div>
-      <div class="about-grid">
-        <div class="panel card about-text reveal">
-          <p>I'm <strong>Abu Bakar Siddique</strong>, though most people call me <strong>Siddique</strong>. I'm a second-year <strong>Bachelor of IT</strong> student at <strong>CQUniversity</strong> in Sydney, majoring in <strong>Cyber Security</strong> with a minor in <strong>Application Development</strong>.</p>
-          <p>I learn by doing. Before I read the chapter on Kerberos, I'd rather have a domain controller running, an attacker box ready, and a log to dig through. Running the attack, watching it land in the logs, and then writing the detection is the loop that makes things click for me.</p>
-          <p>My goal is a <strong>purple team internship in 2027</strong>, where offensive and defensive security work together.</p>
-        </div>
-        <div class="panel card loop reveal d2">
-          <h3 class="card-title">My learning loop</h3>
-          <ol class="loop-list">
-            <li><span class="n red">01</span><div><b>Attack it</b><p>Run the technique from Kali against my own domain.</p></div></li>
-            <li><span class="n">02</span><div><b>Log it</b><p>Make sure the right telemetry exists to see it.</p></div></li>
-            <li><span class="n">03</span><div><b>Detect it</b><p>Write a query that catches it, then tune out the noise.</p></div></li>
-            <li><span class="n purple">04</span><div><b>Harden it</b><p>Fix the weakness so the attack stops working.</p></div></li>
-            <li><span class="n green">05</span><div><b>Repeat</b><p>Pick the next technique on the roadmap.</p></div></li>
-          </ol>
-        </div>
+      <div class="repos-strip">
+        <a class="repo" href="https://github.com/Siddique-12300983/purple-team-journey" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
+          <span class="repo-text">
+            <span class="rn"><span>Siddique-12300983 /</span> purple-team-journey</span>
+            <span class="rd">AD lab notes, build steps and detections</span>
+          </span>
+          <span class="arr" aria-hidden="true">↗</span>
+        </a>
+        <a class="repo" href="https://github.com/Siddique-12300983/ruxchipher-dotfiles" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
+          <span class="repo-text">
+            <span class="rn"><span>Siddique-12300983 /</span> ruxchipher-dotfiles</span>
+            <span class="rd">Widget, sentinel and terminal configs</span>
+          </span>
+          <span class="arr" aria-hidden="true">↗</span>
+        </a>
       </div>
     </div>
   </section>
@@ -268,78 +269,6 @@
             <span class="repo-text">
               <span class="rn"><span>Siddique-12300983 /</span> purple-team-journey</span>
               <span class="rd">Lab notes, build steps and detections</span>
-            </span>
-            <span class="arr" aria-hidden="true">↗</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= WORKSTATION ================= -->
-  <section id="workstation" class="section" aria-labelledby="ws-title">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <p class="sec-tag">03 · workstation</p>
-        <h2 id="ws-title" class="sec-title">A desktop that<br><span class="hl">watches its own back.</span></h2>
-        <p class="sec-sub">My Arch Linux laptop, customised into a security-aware workstation: custom-coded widgets that monitor the system and my lab, and a small service that alerts me to suspicious activity.</p>
-      </div>
-
-      <div class="panel desk reveal">
-        <div class="desk-bar"><span><b>ruxchipher@arch</b> · GNOME on Wayland · Tokyo Night</span><span class="desk-tip">hover a widget for its source file</span></div>
-        <div class="desk-grid">
-          <div class="desk-col">
-            <figure class="shot"><img src="assets/workstation/greeting.png" alt="Greeting widget: Burning the midnight oil, Siddique, with a cyber security tip about service account passwords" width="750" height="207" loading="lazy" decoding="async"><figcaption>left.lua</figcaption></figure>
-            <div class="desk-pair">
-              <figure class="shot"><img src="assets/workstation/mission.png" alt="Mission tracker counting down the days to 2027 with lab objectives and a commit heatmap" width="362" height="400" loading="lazy" decoding="async"><figcaption>left.lua · mission</figcaption></figure>
-              <figure class="shot"><img src="assets/workstation/weather.png" alt="Sydney weather and calendar widget" width="364" height="400" loading="lazy" decoding="async"><figcaption>left.lua · weather</figcaption></figure>
-            </div>
-            <!-- media + lab share one row under mission/weather, so both columns end at the same height -->
-            <div class="desk-pair desk-pair-even">
-              <figure class="shot"><img src="assets/workstation/now-playing.png" alt="Now playing widget with album art, track title and progress bar" width="370" height="166" loading="lazy" decoding="async"><figcaption>media.lua</figcaption></figure>
-              <figure class="shot"><img src="assets/workstation/lab-widget.png" alt="Lab widget showing the DC01, WIN11 and KALI virtual machines with live status and CPU usage" width="370" height="166" loading="lazy" decoding="async"><figcaption>lab.lua</figcaption></figure>
-            </div>
-          </div>
-          <div class="desk-col">
-            <figure class="shot shot-hud"><img src="assets/workstation/hud.png" alt="System monitor HUD with clock, CPU, RAM and GPU gauges, network graph, storage, battery and top processes" width="370" height="810" loading="lazy" decoding="async"><figcaption>hud.lua</figcaption></figure>
-          </div>
-        </div>
-        <p class="desk-note">// lab and now-playing widgets shown with preview data · network name and IP redacted</p>
-      </div>
-
-      <div class="ws-grid">
-        <div class="panel card lab-card reveal">
-          <h3 class="card-title">sentinel: host alerting <span class="chip chip-cyan">blue team</span></h3>
-          <p class="card-text">A Python service I wrote that runs in the background and sends a desktop alert when something looks wrong.</p>
-          <ul class="ws-list">
-            <li>Follows the <strong>systemd journal</strong> for failed passwords: sudo, admin prompts, the login screen and SSH.</li>
-            <li>Polls <strong>listening TCP ports</strong> and flags any new one, marked critical if it's reachable from the network.</li>
-            <li>De-duplicates repeats and writes every alert to a log for review.</li>
-          </ul>
-          <div class="panel term term-mini">
-            <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>events.log · my own test run</span></div>
-            <div class="term-body">
-              <span class="ln"><span class="r">[!]</span> <span class="w">Failed password</span>  <span class="cm">|</span>  source: <span class="c">sudo</span></span>
-              <span class="ln"><span class="r">[!]</span> <span class="w">New listening port</span> <span class="y">(network-exposed)</span></span>
-              <span class="ln">    0.0.0.0:48765  <span class="cm">·</span>  process: <span class="c">python</span></span>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel card lab-card reveal d2">
-          <h3 class="card-title">ruxchipher HUD <span class="chip chip-purple">Lua · cairo</span></h3>
-          <p class="card-text">Four desktop widgets drawn from scratch in Lua with the cairo graphics library, running on Conky.</p>
-          <ul class="ws-list">
-            <li><strong>Battery-aware GPU polling:</strong> checks the GPU's power state first, so the monitor never wakes the RTX 4060.</li>
-            <li><strong>Live lab status:</strong> reads <code>virsh domstats</code> to show which VMs are running and how busy they are.</li>
-            <li><strong>Mission tracker:</strong> my 2027 goal, lab objectives and a commit streak pulled from my lab repo's git history.</li>
-            <li><strong>Non-blocking data:</strong> weather and album art are fetched in the background, and the media widget hides itself when nothing is playing.</li>
-          </ul>
-          <a class="repo" href="https://github.com/Siddique-12300983/ruxchipher-dotfiles" target="_blank" rel="noopener noreferrer">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
-            <span class="repo-text">
-              <span class="rn"><span>Siddique-12300983 /</span> ruxchipher-dotfiles</span>
-              <span class="rd">All widget, sentinel and terminal configs</span>
             </span>
             <span class="arr" aria-hidden="true">↗</span>
           </a>
@@ -440,6 +369,78 @@
     </div>
   </section>
 
+  <!-- ================= WORKSTATION ================= -->
+  <section id="workstation" class="section" aria-labelledby="ws-title">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-tag">03 · workstation</p>
+        <h2 id="ws-title" class="sec-title">A desktop that<br><span class="hl">watches its own back.</span></h2>
+        <p class="sec-sub">My Arch Linux laptop, customised into a security-aware workstation: custom-coded widgets that monitor the system and my lab, and a small service that alerts me to suspicious activity.</p>
+      </div>
+
+      <div class="panel desk reveal">
+        <div class="desk-bar"><span><b>ruxchipher@arch</b> · GNOME on Wayland · Tokyo Night</span><span class="desk-tip">hover a widget for its source file</span></div>
+        <div class="desk-grid">
+          <div class="desk-col">
+            <figure class="shot"><img src="assets/workstation/greeting.png" alt="Greeting widget: Burning the midnight oil, Siddique, with a cyber security tip about service account passwords" width="750" height="207" loading="lazy" decoding="async"><figcaption>left.lua</figcaption></figure>
+            <div class="desk-pair">
+              <figure class="shot"><img src="assets/workstation/mission.png" alt="Mission tracker counting down the days to 2027 with lab objectives and a commit heatmap" width="362" height="400" loading="lazy" decoding="async"><figcaption>left.lua · mission</figcaption></figure>
+              <figure class="shot"><img src="assets/workstation/weather.png" alt="Sydney weather and calendar widget" width="364" height="400" loading="lazy" decoding="async"><figcaption>left.lua · weather</figcaption></figure>
+            </div>
+            <!-- media + lab share one row under mission/weather, so both columns end at the same height -->
+            <div class="desk-pair desk-pair-even">
+              <figure class="shot"><img src="assets/workstation/now-playing.png" alt="Now playing widget with album art, track title and progress bar" width="370" height="166" loading="lazy" decoding="async"><figcaption>media.lua</figcaption></figure>
+              <figure class="shot"><img src="assets/workstation/lab-widget.png" alt="Lab widget showing the DC01, WIN11 and KALI virtual machines with live status and CPU usage" width="370" height="166" loading="lazy" decoding="async"><figcaption>lab.lua</figcaption></figure>
+            </div>
+          </div>
+          <div class="desk-col">
+            <figure class="shot shot-hud"><img src="assets/workstation/hud.png" alt="System monitor HUD with clock, CPU, RAM and GPU gauges, network graph, storage, battery and top processes" width="370" height="810" loading="lazy" decoding="async"><figcaption>hud.lua</figcaption></figure>
+          </div>
+        </div>
+        <p class="desk-note">// lab and now-playing widgets shown with preview data · network name and IP redacted</p>
+      </div>
+
+      <div class="ws-grid">
+        <div class="panel card lab-card reveal">
+          <h3 class="card-title">sentinel: host alerting <span class="chip chip-cyan">blue team</span></h3>
+          <p class="card-text">A Python service I wrote that runs in the background and sends a desktop alert when something looks wrong.</p>
+          <ul class="ws-list">
+            <li>Follows the <strong>systemd journal</strong> for failed passwords: sudo, admin prompts, the login screen and SSH.</li>
+            <li>Polls <strong>listening TCP ports</strong> and flags any new one, marked critical if it's reachable from the network.</li>
+            <li>De-duplicates repeats and writes every alert to a log for review.</li>
+          </ul>
+          <div class="panel term term-mini">
+            <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>events.log · my own test run</span></div>
+            <div class="term-body">
+              <span class="ln"><span class="r">[!]</span> <span class="w">Failed password</span>  <span class="cm">|</span>  source: <span class="c">sudo</span></span>
+              <span class="ln"><span class="r">[!]</span> <span class="w">New listening port</span> <span class="y">(network-exposed)</span></span>
+              <span class="ln">    0.0.0.0:48765  <span class="cm">·</span>  process: <span class="c">python</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel card lab-card reveal d2">
+          <h3 class="card-title">ruxchipher HUD <span class="chip chip-purple">Lua · cairo</span></h3>
+          <p class="card-text">Four desktop widgets drawn from scratch in Lua with the cairo graphics library, running on Conky.</p>
+          <ul class="ws-list">
+            <li><strong>Battery-aware GPU polling:</strong> checks the GPU's power state first, so the monitor never wakes the RTX 4060.</li>
+            <li><strong>Live lab status:</strong> reads <code>virsh domstats</code> to show which VMs are running and how busy they are.</li>
+            <li><strong>Mission tracker:</strong> my 2027 goal, lab objectives and a commit streak pulled from my lab repo's git history.</li>
+            <li><strong>Non-blocking data:</strong> weather and album art are fetched in the background, and the media widget hides itself when nothing is playing.</li>
+          </ul>
+          <a class="repo" href="https://github.com/Siddique-12300983/ruxchipher-dotfiles" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
+            <span class="repo-text">
+              <span class="rn"><span>Siddique-12300983 /</span> ruxchipher-dotfiles</span>
+              <span class="rd">All widget, sentinel and terminal configs</span>
+            </span>
+            <span class="arr" aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ================= SKILLS ================= -->
   <section id="skills" class="section" aria-labelledby="skills-title">
     <div class="wrap">
@@ -491,6 +492,33 @@
       <div class="panel purple-note reveal">
         <span class="eq"><span class="r">red</span> + <span class="b">blue</span> = <span class="p">purple</span></span>
         <span>Every attack I run in the lab ends with a detection I can show for it.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ABOUT ================= -->
+  <section id="about" class="section" aria-labelledby="about-title">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-tag">01 · about</p>
+        <h2 id="about-title" class="sec-title">Build the lab first.<br><span class="hl">Learn the theory second.</span></h2>
+      </div>
+      <div class="about-grid">
+        <div class="panel card about-text reveal">
+          <p>I'm <strong>Abu Bakar Siddique</strong>, though most people call me <strong>Siddique</strong>. I'm a second-year <strong>Bachelor of IT</strong> student at <strong>CQUniversity</strong> in Sydney, majoring in <strong>Cyber Security</strong> with a minor in <strong>Application Development</strong>.</p>
+          <p>I learn by doing. Before I read the chapter on Kerberos, I'd rather have a domain controller running, an attacker box ready, and a log to dig through. Running the attack, watching it land in the logs, and then writing the detection is the loop that makes things click for me.</p>
+          <p>My goal is a <strong>purple team internship in 2027</strong>, where offensive and defensive security work together.</p>
+        </div>
+        <div class="panel card loop reveal d2">
+          <h3 class="card-title">My learning loop</h3>
+          <ol class="loop-list">
+            <li><span class="n red">01</span><div><b>Attack it</b><p>Run the technique from Kali against my own domain.</p></div></li>
+            <li><span class="n">02</span><div><b>Log it</b><p>Make sure the right telemetry exists to see it.</p></div></li>
+            <li><span class="n">03</span><div><b>Detect it</b><p>Write a query that catches it, then tune out the noise.</p></div></li>
+            <li><span class="n purple">04</span><div><b>Harden it</b><p>Fix the weakness so the attack stops working.</p></div></li>
+            <li><span class="n green">05</span><div><b>Repeat</b><p>Pick the next technique on the roadmap.</p></div></li>
+          </ol>
+        </div>
       </div>
     </div>
   </section>

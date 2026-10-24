@@ -730,3 +730,8 @@ html.menu-lock body { overflow: hidden; }
   }
   .cursor, .status-pill .dot, .topo .flow, .topo .attack { animation: none !important; }
 }
+
+/* ---- repos strip under hero ---- */
+.repos-section{padding:6px 0 2px}
+.repos-strip{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:720px){.repos-strip{grid-template-columns:1fr}}
