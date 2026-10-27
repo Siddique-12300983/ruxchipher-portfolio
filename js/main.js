@@ -331,7 +331,7 @@
     const trim = () => { while (out.children.length > MAX_LINES) out.firstElementChild.remove(); };
     const scrollDown = () => { out.scrollTop = out.scrollHeight; };
 
-    const SECTIONS = ["about", "lab", "detections", "skills", "journey", "contact"];
+    const SECTIONS = ["about", "lab", "detections", "toolkit", "skills", "journey", "contact"];
     const goTo = (name) => {
       const id = (name || "").replace(/^[~./]+|\/+$/g, "").toLowerCase();
       if (!SECTIONS.includes(id)) {
@@ -352,6 +352,7 @@
           ["whoami", "who is behind this"],
           ["lab", "the Harbourline Freight lab"],
           ["detect", "the Kerberoasting detection"],
+          ["tools", "what I have built"],
           ["skills", "red · blue · build"],
           ["journey", "study and work"],
           ["contact", "ways to reach me"],
@@ -383,6 +384,18 @@
         line(["cm", "# MITRE ATT&CK T1558.003 · full query: cd detections"]);
       },
       kerberoast() { COMMANDS.detect(); },
+      tools() {
+        line(["w", "detection tooling"], ["cm", "  # all public, all tested"]);
+        line("  ", ["c", "attack-coverage-map".padEnd(26)], ["cm", "ATT&CK coverage, depth and gaps"]);
+        line("  ", ["c", "persistwatch".padEnd(26)], ["cm", "systemd persistence hunting"]);
+        line("  ", ["c", "sigma-detection-rules".padEnd(26)], ["cm", "Sigma rules from my own lab"]);
+        line("  ", ["c", "log-analyzer".padEnd(26)], ["cm", "brute force and Kerberoasting"]);
+        line("  ", ["c", "phishing-email-analyzer".padEnd(26)], ["cm", "offline .eml triage"]);
+        line("  ", ["c", "file-integrity-monitor".padEnd(26)], ["cm", "SHA-256 baseline and diff"]);
+        line(["cm", "# the full list with links: cd toolkit"]);
+      },
+      toolkit() { COMMANDS.tools(); },
+      projects() { COMMANDS.tools(); },
       skills() {
         line(["r", "red   "], "Kali · Kerberoasting · SPN enumeration · Networking");
         line(["c", "blue  "], "Active Directory · GPO · 4769 detection · Wireshark");
