@@ -274,7 +274,9 @@
             <li><span class="st done">done</span><span>Audit policy GPO: 4688 command lines, logons, group changes</span></li>
             <li><span class="st done">done</span><span>Sysmon on Windows 11 for endpoint telemetry</span></li>
             <li><span class="st done">done</span><span>Kerberoasted svc_sql, caught it as 4769 (AES, not RC4)</span></li>
-            <li><span class="st next">next</span><span>Wazuh SIEM for central alerting</span></li>
+            <li><span class="st done">done</span><span>LLMNR/NBT-NS poisoning: captured a hash, detected and hardened</span></li>
+            <li><span class="st done">done</span><span>Wazuh SIEM: central alerting with custom detection rules</span></li>
+            <li><span class="st next">next</span><span>Tune detections, then Atomic Red Team simulations</span></li>
           </ul>
 
           <a class="repo" href="https://github.com/Siddique-12300983/purple-team-journey" target="_blank" rel="noopener noreferrer">
@@ -431,9 +433,9 @@
 
       <div class="next-grid">
         <article class="panel card next-card lift reveal d1">
-          <span class="chip chip-cyan">next up</span>
-          <h3 class="card-title">Central alerting with Wazuh</h3>
-          <p class="card-text">Ship lab logs into Wazuh so detections like this one fire as real alerts instead of manual hunts.</p>
+          <span class="chip chip-green">live</span>
+          <h3 class="card-title">Wazuh SIEM</h3>
+          <p class="card-text">A Wazuh SIEM now collects Security and Sysmon from both Windows hosts, with my custom rules firing on the live attacks, including a Kerberoast that a built-in rule was silently dropping.</p>
         </article>
         <article class="panel card next-card lift reveal d2">
           <span class="chip chip-cyan">next up</span>
@@ -745,7 +747,7 @@
           <li class="tl now">
             <p class="when">Now</p>
             <p class="what">Second year + Harbourline Freight lab</p>
-            <p class="det">Studying, working at Avis, and building out the AD lab: Sysmon and Wazuh are next.</p>
+            <p class="det">Studying, working at Avis, and building out the AD lab, now with Sysmon and a Wazuh SIEM running detections.</p>
           </li>
           <li class="tl goal">
             <p class="when">2027</p>
