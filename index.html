@@ -367,6 +367,68 @@
         <a class="text-link" href="https://github.com/Siddique-12300983/purple-team-journey" target="_blank" rel="noopener noreferrer">read the lab notes on GitHub ↗</a>
       </article>
 
+      <article class="panel card case reveal" aria-labelledby="case-llmnr">
+        <div class="case-head">
+          <h3 id="case-llmnr" class="card-title">LLMNR / NBT-NS poisoning: attack &amp; detect</h3>
+          <ul class="chips" aria-label="Tags">
+            <li class="chip chip-purple">MITRE T1557.001</li>
+            <li class="chip chip-amber">Sysmon Event 3 &amp; 22</li>
+            <li class="chip chip-green">documented</li>
+          </ul>
+        </div>
+        <p class="card-text">When DNS fails, Windows falls back to LLMNR, NBT-NS and mDNS and trusts whoever answers. I poison those answers from Kali with Responder, the client authenticates to me, and I capture its Net-NTLMv2 hash. Then I catch it in the logs and shut the attack down.</p>
+
+        <ol class="chain">
+          <li class="red"><span class="t">Red</span><p>Poison name resolution from Kali with Responder, then capture a Net-NTLMv2 hash when the client touches a fake share.</p></li>
+          <li class="blue"><span class="t">Blue</span><p>Catch the rogue SMB connection to the attacker (Event 3) and the bogus name resolving to an endpoint (Event 22). The broadcast rule needed the Sysmon config fixed to log UDP first.</p></li>
+          <li class="purple"><span class="t">Purple</span><p>Disable LLMNR, NBT-NS and mDNS. mDNS is the third vector most hardening guides forget.</p></li>
+        </ol>
+
+        <div class="code-wrap" data-tabs>
+          <div class="code-bar">
+            <div class="tabs" role="tablist" aria-label="Detection format">
+              <button type="button" role="tab" id="tab-ps-llmnr" aria-controls="panel-ps-llmnr" aria-selected="true">PowerShell</button>
+              <button type="button" role="tab" id="tab-sigma-llmnr" aria-controls="panel-sigma-llmnr" aria-selected="false" tabindex="-1">Sigma</button>
+            </div>
+            <button type="button" class="copy-btn" data-copy>copy</button>
+          </div>
+          <div class="code-panel" role="tabpanel" id="panel-ps-llmnr" aria-labelledby="tab-ps-llmnr">
+<pre class="code" tabindex="0"><code><span class="cm"># Hunt: LLMNR / NBT-NS broadcasts from a host (Sysmon Event 3)</span>
+<span class="k">Get-WinEvent</span> -FilterHashtable @{ LogName=<span class="s">'Microsoft-Windows-Sysmon/Operational'</span>; Id=<span class="n">3</span> } |
+  <span class="k">Where-Object</span> { <span class="v">$_</span>.Message <span class="o">-match</span> <span class="s">'DestinationPort: (5355|137)'</span> <span class="o">-and</span>
+                 <span class="v">$_</span>.Message <span class="o">-match</span> <span class="s">'Initiated: true'</span> } |
+  <span class="k">Select-Object</span> TimeCreated
+
+<span class="cm"># SwiftOnSecurity's config drops UDP, so this is blind until you add</span>
+<span class="cm"># 5355 / 137 / 5353 to the NetworkConnect include block.</span></code></pre>
+          </div>
+          <div class="code-panel" role="tabpanel" id="panel-sigma-llmnr" aria-labelledby="tab-sigma-llmnr">
+<pre class="code" tabindex="0"><code><span class="k">title</span>: LLMNR and NBT-NS Responder traffic
+<span class="k">status</span>: experimental
+<span class="k">tags</span>:
+  - attack.credential-access
+  - attack.t1557.001
+<span class="k">logsource</span>:
+  <span class="k">product</span>: windows
+  <span class="k">category</span>: network_connection
+<span class="k">detection</span>:
+  <span class="k">selection_llmnr</span>:
+    <span class="k">Initiated</span>: <span class="s">'true'</span>
+    <span class="k">Protocol</span>: <span class="s">'udp'</span>
+    <span class="k">DestinationPort</span>: <span class="n">5355</span>
+  <span class="k">selection_nbtns</span>:
+    <span class="k">Initiated</span>: <span class="s">'true'</span>
+    <span class="k">Protocol</span>: <span class="s">'udp'</span>
+    <span class="k">DestinationPort</span>: <span class="n">137</span>
+  <span class="k">condition</span>: selection_llmnr or selection_nbtns
+<span class="k">level</span>: medium</code></pre>
+          </div>
+        </div>
+
+        <p class="case-note"><b>The catch:</b> the rule keys on Sysmon network-connection events for UDP 5355/137, but SwiftOnSecurity's config logs no UDP, so it was blind until I added those ports to the sensor. The signals that caught the attack anyway: the rogue SMB connection (Event 3) and the poisoned name resolving to the attacker (Event 22).</p>
+        <a class="text-link" href="https://github.com/Siddique-12300983/purple-team-journey/blob/main/labs/ad-lab/llmnr.md" target="_blank" rel="noopener noreferrer">read the full write-up on GitHub &#8599;</a>
+      </article>
+
       <div class="next-grid">
         <article class="panel card next-card lift reveal d1">
           <span class="chip chip-cyan">next up</span>
@@ -375,8 +437,8 @@
         </article>
         <article class="panel card next-card lift reveal d2">
           <span class="chip chip-cyan">next up</span>
-          <h3 class="card-title">LLMNR / NBT-NS poisoning</h3>
-          <p class="card-text">The next attack-and-detect loop: poison name resolution from Kali, then catch the responder traffic. A Sigma rule for it is already in my detection-rules repo.</p>
+          <h3 class="card-title">Atomic Red Team</h3>
+          <p class="card-text">Run scripted ATT&amp;CK techniques against the lab to test my detections at volume, not one attack at a time.</p>
         </article>
       </div>
     </div>
